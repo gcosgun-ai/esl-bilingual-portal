@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ESL &amp; Bilingual Department Portal — iLearn Schools</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=MuseoModerno:wght@600;700&family=Lato:wght@400;700&family=Inter:wght@400;500&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#EDEDED;font-family:Roboto,Helvetica,Arial,sans-serif;color:rgba(0,0,0,.87);-webkit-font-smoothing:antialiased}
+a{color:#E07A00;text-decoration:none}
+a:hover{color:#B35F00;text-decoration:underline}
+button,select,input{font-family:inherit}
+.mi{font-family:'Material Icons';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';-webkit-font-smoothing:antialiased;user-select:none}
+
+.g2,.g3,.g4,.g5,.g6,.gmain{display:grid;gap:16px;align-items:start}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g5{grid-template-columns:repeat(5,1fr)}
+.g6{grid-template-columns:repeat(6,1fr)}
+.gmain{grid-template-columns:1.4fr 1fr}
+.gform{display:grid;gap:18px 26px;grid-template-columns:1fr 1fr}
+.gform3{display:grid;gap:18px 24px;grid-template-columns:repeat(3,1fr)}
+
+@media print{
+  .no-print,.sb{display:none!important}
+  .main{padding:0!important}
+  body{background:#fff}
+  .sheet{border:1px solid #E0E0E0!important;box-shadow:none!important}
+  .app{display:block!important}
+}
+
+.app{display:flex;min-height:100vh;align-items:stretch}
+.sb{width:264px;flex-shrink:0;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 1px rgba(0,0,0,.14);padding:16px 0 32px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{flex:1;min-width:0;padding:16px 24px 48px;display:flex;flex-direction:column;gap:16px}
+.tcard{overflow-x:auto}
+
+@media(max-width:1440px){.g6{grid-template-columns:repeat(3,1fr)}.g5{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:1200px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}.gmain{grid-template-columns:1fr}.sb{width:224px}}
+@media(max-width:900px){.g2,.g3,.g4,.g5,.g6,.gform,.gform3{grid-template-columns:1fr}.main{padding:12px 14px 40px}.app{flex-direction:column}.sb{position:relative;height:auto;width:100%}}
+
+.card{background:#fff;border-radius:5px;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 1px rgba(0,0,0,.14)}
+.hairline{height:1px;background:#E0E0E0;margin:22px 0}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:9999px;font:500 12px/1 Roboto,sans-serif}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;height:36px;font:500 14px/1 Roboto,sans-serif;text-transform:uppercase;letter-spacing:.4px;border:1px solid #FF9215;border-radius:4px;background:transparent;color:#E07A00;cursor:pointer}
+.btn-outline:hover{background:#FFF1DE}
+.btn-solid{font:500 13px/34px Roboto,sans-serif;letter-spacing:.02em;background:#9747FF;color:#fff;border-radius:4px;padding:0 16px;text-decoration:none;border:0;cursor:pointer;display:inline-block}
+.btn-solid:hover{background:#7B2FE0;text-decoration:none;color:#fff}
+
+.entry{min-width:52px;height:30px;border:1px solid #BDBDBD;border-radius:4px;padding:0 8px;font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.87);background:#fff;text-align:center}
+.entry:focus{outline:2px solid #FF9215;outline-offset:1px;border-color:#FF9215}
+.entry-wide{width:100%;text-align:left}
+.status-select{display:inline-flex;align-items:center;height:24px;padding:0 10px 0 8px;border-radius:9999px;font:500 12px/1 Roboto,sans-serif;border:0;cursor:pointer}
+.chk{width:15px;height:15px;border-radius:2px;flex-shrink:0;cursor:pointer;accent-color:#FF9215}
+.chk-round{width:16px;height:16px;border-radius:2px;accent-color:#9747FF;cursor:pointer}
+.underline-input{width:100%;border:0;border-bottom:1px solid #BDBDBD;height:26px;font:400 13px/1 Roboto,sans-serif;background:transparent;padding:0}
+.underline-input:focus{outline:0;border-bottom:1px solid #E07A00}
+
+.navbtn{display:flex;align-items:center;gap:14px;padding:10px 20px;font:400 14px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.87);background:transparent;border:0;border-left:3px solid transparent;width:100%;text-align:left;cursor:pointer;transition:background 150ms ease-out}
+.navbtn:hover{background:rgba(0,0,0,.04)}
+.navbtn.active{color:#E07A00;background:#FFF1DE;border-left:3px solid #FF9215}
+.navbtn .mi{font-size:20px;color:rgba(0,0,0,.6)}
+.navbtn.active .mi{color:#E07A00}
+
+.rolebtn{height:32px;padding:0 12px;border:1px solid #E0E0E0;border-radius:9999px;background:#fff;color:rgba(0,0,0,.6);font:400 13px/1 Roboto,sans-serif;cursor:pointer}
+.rolebtn:hover{background:#FAFAFA}
+.rolebtn.active{border:0;background:#FFF1DE;color:#E07A00;font:500 13px/1 Roboto,sans-serif}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sb" id="sidebar"></aside>
+  <div class="main" id="main"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script>
+/* ============================= FIREBASE (shared live data) ============================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDBT6ez8YxL1eocn5cnUxGpRURzSMnpk8g",
+  authDomain: "esl-bilingual-portal.firebaseapp.com",
+  databaseURL: "https://esl-bilingual-portal-default-rtdb.firebaseio.com",
+  projectId: "esl-bilingual-portal",
+  storageBucket: "esl-bilingual-portal.firebasestorage.app",
+  messagingSenderId: "25630188737",
+  appId: "1:25630188737:web:e19afd870d2ef30149a040"
+};
+let fbRef = null;
+let firebaseConnected = false;
+let firebaseReady = false;
+
+/* ============================= DATA ============================= */
+const LOGO_SVG = `<svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" style="width:100%;height:auto;display:block">
+<title>iLearn Schools ESL &amp; Bilingual Department logo</title>
+<rect width="680" height="250" fill="#ffffff"></rect>
+<rect x="60" y="50" width="160" height="160" rx="28" fill="#ff9015"></rect>
+<path d="M85,150 Q140,90 195,150" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"></path>
+<rect x="78" y="150" width="124" height="8" rx="4" fill="#ffffff"></rect>
+<rect x="95" y="158" width="8" height="30" fill="#7c3aed"></rect>
+<rect x="177" y="158" width="8" height="30" fill="#7c3aed"></rect>
+<rect x="70" y="186" width="140" height="6" rx="3" fill="#7c3aed" opacity="0.55"></rect>
+<text x="260" y="95" font-family="Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="3" fill="#666666">ILEARN SCHOOLS</text>
+<text x="260" y="138" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="#1a1a1a">ESL &amp; Bilingual</text>
+<text x="260" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="600" letter-spacing="4" fill="#ff9015">DEPARTMENT</text>
+<rect x="260" y="182" width="300" height="5" rx="2" fill="#ff9015"></rect>
+</svg>`;
+
+const TITLES = {
+  dash: 'Department Dashboard', timeline: 'Program Timeline', ident: 'Identification',
+  service: 'Service & Instruction', exit: 'Exit & Reclassification', fml: 'Former ML Monitoring',
+  notices: 'Parent Notices & Family Rights', pac: 'Parent Advisory Committee',
+  plc: 'Weekly PLC Cohorts', wida: 'WIDA ELD Standards & Regulations', curriculum: 'ESL Curriculum Files'
+};
+
+const NAV_DEFS = [
+  { label: 'Overview', items: [['dash','dashboard','Department Dashboard'], ['timeline','event_note','Program Timeline']] },
+  { label: 'Student Pathway', items: [['ident','assignment','Identification'], ['service','menu_book','Service & Instruction'], ['exit','logout','Exit & Reclassification'], ['fml','visibility','Former ML Monitoring']] },
+  { label: 'Families & Staff', items: [['notices','mail','Parent Notices'], ['plc','cast_for_education','Weekly PLC'], ['pac','groups','Parent Advisory Cmte.']] },
+  { label: 'Reference', items: [['wida','school','WIDA ELD Standards'], ['curriculum','folder_open','ESL Curriculum Files']] }
+];
+
+const CAMPUSES = [
+  'Bergen ASCS – Primary (K–1), Garfield','Bergen ASCS – Elementary (2–4), Garfield','Bergen ASCS – Middle (5–8), Garfield','Bergen ASCS – High (9–12), Hackensack',
+  'Passaic ASCS – Passaic Primary (K–1)','Passaic ASCS – Passaic Elementary (2–4)','Passaic ASCS – Passaic Middle (5–8)','Passaic ASCS – Passaic High (9–12)',
+  'Passaic ASCS – Clifton Primary (K–1)','Passaic ASCS – Clifton Elementary (2–4)','Passaic ASCS – Clifton Middle (5–7)','Passaic ASCS – Clifton High (8–10)',
+  'Paterson ASCS – Primary (K–2)','Paterson ASCS – Elementary (3–5)','Paterson ASCS – Middle (6–8)','Paterson ASCS – High (9–12)','Paterson ASCS – Silk City Primary (K–2)',
+  'Hudson ASCS – Elementary (K–4)','Hudson ASCS – Junior High (5–9)',
+  'Bronx ASCS – Primary (K)','Bronx ASCS – Elementary (1–5)','Bronx ASCS – Middle (6–8)'
+];
+
+const ROLE_DEFS = [
+  { id: 'director', label: 'Director', note: 'District-wide compliance across all NJ campuses.', tasks: [
+    { title: 'Confirm identification is 100% complete at every campus', meta: 'Hard deadline Sep 18' },
+    { title: 'Verify placement letters went out within the legal window', meta: 'By Sep 21' },
+    { title: 'Review weekly lesson plan submissions by campus', meta: 'Fridays' },
+    { title: 'Schedule the three required PAC meetings', meta: 'Oct 30 · Feb 19 · May 21' },
+    { title: 'Prepare the annual ESL program evaluation', meta: 'June, after preliminary ACCESS' }]},
+  { id: 'esl', label: 'ESL Teacher', note: 'Your caseload, instruction, and family notices.', tasks: [
+    { title: 'Finish HLS and Records Review for new enrollees', meta: 'Aug 24 – Sep 4' },
+    { title: 'Administer WIDA Screener and score results', meta: 'Sep 8 – 17' },
+    { title: 'Send placement, continuation, and exit letters', meta: 'By Sep 21' },
+    { title: 'Submit next week’s lesson plans to Ms. Cosgun and the ADA', meta: 'Every Friday' },
+    { title: 'Complete a push-in journal entry for every integrated period', meta: 'Daily' },
+    { title: 'Update ML student files with prior-year ACCESS scores', meta: 'Staff week' }]},
+  { id: 'aide', label: 'Bilingual Aide', note: 'Push-in support and journaling.', tasks: [
+    { title: 'Complete a journal row for each period you push into', meta: 'One row per period, daily' },
+    { title: 'Log arrival time and reason for any late arrival', meta: 'Auto-flagged in the journal' },
+    { title: 'Record scaffolds used for MLs in each session', meta: 'Frames, visuals, native-language support' },
+    { title: 'Attend PLC days with your designated cohort', meta: 'Mandatory' }]},
+  { id: 'sei', label: 'SEI Teacher', note: 'Sheltering content for the MLs in your classes.', tasks: [
+    { title: 'Post content and language objectives daily', meta: 'Every sheltered lesson' },
+    { title: 'Shelter handouts, homework, and assessments', meta: 'All materials' },
+    { title: 'Provide bilingual dictionaries and extended time on benchmarks', meta: 'All MLs' },
+    { title: 'Join the exit observation meeting when asked', meta: 'At least one content teacher required' }]},
+  { id: 'office', label: 'Front Office', note: 'Intake and records.', tasks: [
+    { title: 'Administer the HLS to every new enrollee', meta: 'At enrollment, ages 3–21' },
+    { title: 'Request the HLS in the family’s home language before intake day', meta: '20+ translations available' },
+    { title: 'Route any flagged HLS to the ESL teacher for Records Review', meta: 'Same week' },
+    { title: 'Transfer records to a new district within 10 business days', meta: 'On withdrawal' }]},
+  { id: 'principal', label: 'Principal / ADA', note: 'Scheduling, coverage, and campus compliance.', tasks: [
+    { title: 'Finalize pull-out and push-in schedules with the ESL teacher', meta: 'Sep 18 – 21' },
+    { title: 'Protect one daily ESL period for every ML', meta: 'Program requirement' },
+    { title: 'Confirm lesson plans and journals are being submitted', meta: 'Weekly' },
+    { title: 'Support PAC attendance and family outreach', meta: 'Three meetings a year' }]},
+  { id: 'family', label: 'Family', note: 'What families receive and can decide.', tasks: [
+    { title: 'Read the placement notice and program description', meta: 'Sent within 30 / 14 days' },
+    { title: 'Decide whether to accept or decline services', meta: 'Revisited every school year' },
+    { title: 'Attend a Parent Advisory Committee meeting', meta: 'Three per year' },
+    { title: 'Ask for progress updates at conferences', meta: 'Nov 13 and Mar 19' }]}
+];
+
+const TIMELINE_ROWS = [
+  { date: 'Aug 17 – 21, 2026', sub: 'Staff week', tag: 'Preparation', title: 'Staff report back', body: 'Review returning MLs’ prior-year ACCESS / WIDA MODEL scores, update ML student files, and prepare annual continuation notification letters.' },
+  { date: 'Aug 24, 2026', sub: 'First day of school', tag: 'Step 1', title: 'Home Language Survey begins', body: 'The HLS is administered to all newly enrolled students as Identification Step 1.' },
+  { date: 'Aug 24 – Sep 4, 2026', sub: 'Quarter 1', tag: 'Steps 1–2', title: 'Complete HLS and Records Review', body: 'Finish the HLS for all new enrollees, conduct Records Review where the HLS indicates further review, and send WIDA MODEL / ELP screening notification letters home.' },
+  { date: 'Sep 8 – 17, 2026', sub: 'Quarter 1', tag: 'Step 3', title: 'Administer ELP screening', body: 'Administer the screener, score results, and complete English Language Observation Forms for any student who meets exit criteria.' },
+  { date: 'Sep 18, 2026', sub: 'Hard deadline', tag: 'Deadline', title: 'Identification 100% complete', body: 'HLS, Records Review, and ELP screening fully documented for every student. No exceptions, no extensions.' },
+  { date: 'Sep 18 – 21, 2026', sub: 'Quarter 1', tag: 'Placement', title: 'Instruction begins immediately', body: 'No gap between finishing identification and starting services. The ESL teacher and school ADA finalize stand-alone versus integrated placement by proficiency level.' },
+  { date: 'By Sep 21, 2026', sub: 'Legal window', tag: 'Notices', title: 'Parent notification letters sent', body: 'New ML placement, continuation, and exit notifications go out within the 30-day (returning) and 14-day (new enrollee) windows.' },
+  { date: 'Sep 21, 2026', sub: 'Official start', tag: 'Program', title: 'Program start date', body: 'ELL database tab updated; class rosters and schedules finalized and shared with the Department Head and school ADA.' },
+  { date: 'Every Friday', sub: 'From Sep 25, 2026', tag: 'Weekly', title: 'Lesson plans due', body: 'Plans for the following week are shared via Google Drive with Ms. Cosgun and the school ADA.' },
+  { date: 'Daily', sub: 'From Sep 21, 2026', tag: 'Daily', title: 'Push-in journals completed', body: 'ESL teachers and aides log every integrated session — one row per period.' },
+  { date: 'Per PLC calendar', sub: 'Ongoing', tag: 'Mandatory', title: 'PLC attendance', body: 'All ESL teachers and aides attend PLC days with their designated cohort.' },
+  { date: 'By Oct 30, 2026', sub: 'Quarter 1 ends', tag: 'PAC 1', title: '1st Parent Advisory Committee meeting', body: 'Mandatory for ESL and bilingual staff and open to ML families.' },
+  { date: 'Nov 13, 2026', sub: 'Early dismissal', tag: 'Conference', title: 'Parent-teacher conferences', body: 'ESL teachers participate and share ML progress with families.' },
+  { date: 'By Nov 30, 2026', sub: 'Quarter 2', tag: 'Reporting', title: '1st progress report card', body: 'Issued for all MLs.' },
+  { date: 'By Feb 12, 2027', sub: 'Quarter 3', tag: 'Notices', title: 'ACCESS testing notification', body: 'Notify ML families about the upcoming annual ACCESS for ELLs testing window.' },
+  { date: 'By Feb 19, 2027', sub: 'Quarter 3', tag: 'PAC 2', title: '2nd Parent Advisory Committee meeting', body: 'Mandatory — not optional.' },
+  { date: 'Late Feb – Apr 9, 2027', sub: 'State window', tag: 'Assessment', title: 'ACCESS for ELLs testing', body: 'Conduct the annual state English language proficiency assessment.' },
+  { date: 'By May 21, 2027', sub: 'Quarter 4', tag: 'PAC 3', title: '3rd Parent Advisory Committee meeting', body: 'Mandatory — not optional.' },
+  { date: 'By May 28, 2027', sub: 'Quarter 4', tag: 'Reporting', title: '2nd progress report card', body: 'Issued for all MLs.' },
+  { date: 'As criteria are met', sub: 'Ongoing', tag: 'Exit', title: 'Exit procedures completed', body: 'Complete exit paperwork and parent exit notifications as soon as a student reaches a 4.5+ composite. Never held until the end of the year.' },
+  { date: 'June 2027', sub: 'Year close', tag: 'Review', title: 'Preliminary ACCESS results', body: 'Review results and begin preparing ML student files and continuation letters for 2027–2028.' }
+];
+
+const LETTER_IDS = ['screening','initial','continuation','exit','optout','access'];
+const LETTER_LIB = {
+  screening: { icon:'campaign', title: 'English Language Proficiency Assessment Notification', heading: 'English Language Proficiency Assessment Notification',
+    deadline: 'Sent before screening, during the Aug 24 – Sep 4 identification window.',
+    fields: ['Date:','School / Campus:','Student Name:','Grade:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'This letter is to inform you that beginning on the date above, your child will participate in an English proficiency test.',
+      'Your child will be assessed with the WIDA Screener in listening, speaking, reading, and writing.',
+      'We will send your child’s test results to you after all testing is completed. If you have any questions, please do not hesitate to contact us. Thank you for your cooperation.',
+      'Sincerely, ______________________________  ·  Name, title, and contact information'],
+    checksLabel: '', checks: [], due:'Aug 24 – Sep 4', cardBody:'Sent before screening, telling families their child will be assessed for English language proficiency.' },
+  initial: { icon:'assignment_turned_in', title: 'Notification of Initial Placement in Bilingual / ESL Program', heading: 'Notification of Initial Placement in Bilingual / ESL Program',
+    deadline: 'Sent within 30 calendar days of the start of the school year, or 14 calendar days for students enrolling after the year begins.',
+    fields: ['Date:','District:','School / Campus:','Student Name:','Current Grade Level:','WIDA Screener proficiency level:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'Based on your child’s English proficiency test scores, academic achievement, and teacher recommendations, your child has been identified as eligible for our district’s ESL / Bilingual program. The goal of this program is to help your child develop English language skills and meet age-appropriate academic standards.',
+      'New Jersey state law requires all identified English Language Learners in grades K–12 to take the ACCESS for ELLs assessment annually to measure their English language proficiency.',
+      'Students typically participate in the program for one to four years. Multiple criteria determine when a student is ready to exit: the teacher’s professional judgment, English reading level, academic performance, and scores on standardized tests in English.',
+      'For students with an Individualized Education Program, progress in speaking, reading, and writing in English will support their ability to meet their IEP objectives.',
+      'If you would like more information, or if you wish to decline or withdraw your child from the program, please contact the staff member below by email or with a signed written notice.',
+      'Sincerely, ______________________________  ·  School Director'],
+    checksLabel: 'Method of instruction and service model',
+    checks: ['English as a Second Language (ESL)','Bilingual Resource Program','Inclusion — support within the general education classroom','Pull-out — specialized instruction in a small group setting'],
+    due:'Within 30 / 14 days', cardBody:'Identifies why the student was identified, the level of proficiency, the program, and the right to decline.' },
+  continuation: { icon:'autorenew', title: 'Notification of Continuing Placement in Bilingual / ESL Program', heading: 'Notification of Continuing Placement in Bilingual / ESL Program',
+    deadline: 'Sent annually within the first 30 days of the school year, to every ML family — including families who declined services.',
+    fields: ['Date:','District:','School / Campus:','Student Name:','Current Grade Level:','WIDA ACCESS proficiency level:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'Based on your child’s English proficiency test scores, academic achievement, and teacher recommendations, we are pleased to inform you that your child will continue to receive instruction in our district’s ESL / Bilingual program.',
+      'New Jersey state law requires all identified English Language Learners in grades K–12 to take the ACCESS for ELLs assessment annually to measure their English language proficiency.',
+      'Students typically participate in the program for one to four years. Multiple criteria determine readiness to exit: teacher judgment, English reading level, academic performance, and scores on standardized tests in English.',
+      'For students with an Individualized Education Program, progress in speaking, reading, and writing in English will support their ability to meet their IEP objectives.',
+      'Sincerely, ______________________________  ·  School Director'],
+    checksLabel: 'Method of instruction and service model',
+    checks: ['English as a Second Language (ESL)','Bilingual Resource Program','Inclusion — support within the general education classroom','Pull-out — specialized instruction in a small group setting'],
+    due:'First 30 days', cardBody:'Sent every year to all ML families, including those who declined services. Includes the latest ACCESS score.' },
+  exit: { icon:'logout', title: 'Notification of Exit from ESL Program', heading: 'Notification of Exit from ESL Program',
+    deadline: 'Sent as soon as a student meets both exit criteria — never held until the end of the year.',
+    fields: ['Date:','School / Campus:','Student Name:','Current Grade Level:','WIDA ACCESS level achieved:','ESL teacher:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'We are pleased to inform you that, based on your child’s English proficiency test scores, academic achievement, and teacher recommendations, your child has successfully met the criteria to exit the English as a Second Language program.',
+      'Our school will continue to monitor your child’s academic progress for two years to ensure a smooth transition and to provide additional support if needed.',
+      'For more detailed information about the score above, please see the attached official score report.',
+      'Sincerely, ______________________________  ·  ESL Teacher'],
+    checksLabel: '', checks: [], due:'As criteria are met', cardBody:'Sent when a student meets both exit criteria. Explains the change in status and continued monitoring.' },
+  optout: { icon:'block', title: 'Annual Opt-Out Waiver', heading: 'Annual Waiver of Language Instruction Educational Program Services',
+    deadline: 'Signed and filed every school year. Refusal of services does not exit a student from ML status.',
+    fields: ['Date:','School / Campus:','Student Name:','Current Grade Level:','Parent / Guardian name:','Relationship to student:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'You have the right to decline some or all of the language instruction services offered to your child, or to request a different available program.',
+      'Your child will remain identified as a Multilingual Learner until they reach a 4.5 or higher composite score and complete the exit process. Declining services does not exit a student.',
+      'Your child will continue to participate in annual ACCESS for ELLs testing, and you will continue to receive an annual notification and score report.',
+      'During the first three years of participation, removal from the program mid-year requires Executive County Superintendent approval; removal at year-end does not.',
+      'This decision must be revisited and re-signed every school year.',
+      'Parent / Guardian signature: ______________________________   Date: ____________'],
+    checksLabel: 'Decision',
+    checks: ['I decline all language instruction program services','I decline some services (specify below)','I request a different available program','I accept the program as described'],
+    due:'Annually', cardBody:'Documents a family’s decision to decline services. Revisited and re-signed every school year.' },
+  access: { icon:'science', title: 'ACCESS for ELLs Testing Notice', heading: 'Notification of Annual ACCESS for ELLs Testing',
+    deadline: 'Sent by February 12, 2027, ahead of the late February – April 9 state testing window.',
+    fields: ['Date:','School / Campus:','Student Name:','Current Grade Level:'],
+    body: ['Dear Parent(s) or Guardian(s),',
+      'Your child will participate in the annual ACCESS for ELLs assessment during the state testing window. The assessment measures growth in listening, speaking, reading, and writing in English.',
+      'All students identified as Multilingual Learners take this assessment each year until they reach the state proficiency standard, including students whose families have declined program services.',
+      'You will receive your child’s individual score report when results are released.',
+      'Sincerely, ______________________________  ·  ESL Teacher'],
+    checksLabel: '', checks: [], due:'By Feb 12', cardBody:'Informs families of the annual state assessment window and their child’s participation.' }
+};
+
+const NOTICE_ELEMENTS = [
+  'The family is informed within 30 days of the start of the year, or within 14 days of placement for later enrollees.',
+  'The notice is in an understandable, uniform format and, to the extent practicable, in a language the parents understand.',
+  'It states why the child was identified as an ML and why placement in a language instruction program will help.',
+  'It reports the child’s level of English proficiency, how it was assessed, and the child’s academic level.',
+  'It describes the method of instruction used, other available methods, and how they differ.',
+  'It explains how the program will meet the child’s needs in attaining English and meeting state standards.',
+  'It states the program’s exit requirements, expected rate of transition, and for high school, expected graduation rate.',
+  'It explains how the program will meet the objectives of an IEP for a child with a disability.',
+  'It gives written guidance on the right to remove the child or choose another available program.',
+  'It names who to contact with questions about program services.'
+];
+
+const TRACK_ROWS = ['ELP screening notification', 'Initial placement notice', 'Annual continuation notice', 'Exit / reclassification notice', 'Annual opt-out waiver', 'ACCESS testing notice'];
+
+const FILE_CHECKLIST = [
+  'Home Language Survey', 'Records Review documentation', 'WIDA Screener scores',
+  'ACCESS for ELLs scores', 'Notification of initial ESL placement', 'Annual continuation notification',
+  'Reclassification / exit notification', 'Annual opt-out waiver', 'English Language Observation Form',
+  'Growth, goal, and trajectory record', 'English learning success plan', 'Progress monitoring documents',
+  'Documents from prior school (optional)', 'Salient family communications (optional)'
+];
+
+const FML_ROWS = [
+  { key:'y1', label: 'Year 1 · F1' }, { key:'y2', label: 'Year 2 · F2' },
+  { key:'y3', label: 'Year 3 · F3 (reporting)' }, { key:'y4', label: 'Year 4 · F4 (reporting)' }
+];
+
+const PAC_MEETINGS = [
+  { tag: '1st of three', date: 'Oct 30, 2026', body: 'Program overview for the year: identification results, placement models, and what families can expect from ESL services.' },
+  { tag: '2nd of three', date: 'Feb 19, 2027', body: 'ACCESS testing window, how scores are used, and how families can support English development at home.' },
+  { tag: '3rd of three', date: 'May 21, 2027', body: 'Year in review: progress, exit decisions, monitoring, and planning for 2027–2028.' }
+];
+
+const PLC_COHORTS = [
+  { key:'tue', day: 'Tuesday', who: 'Paterson, Hudson, and Bergen campus ESL staff', campusList: 'Paterson · Hudson · Bergen', rosterRows: 8 },
+  { key:'wed', day: 'Wednesday', who: 'Passaic and Bronx campus ESL and ENL staff', campusList: 'Passaic · Bronx', rosterRows: 8 }
+];
+
+const PLC_QUARTERS = [
+  { label: 'Marking Period 1 — Foundations', span: 'September – November', topics: [
+    'The Can Do Philosophy: assets-based planning in practice',
+    "Reading a student's ACCESS score report — composite vs. domain scores",
+    'The four Key Language Uses: Narrate, Inform, Explain, Argue',
+    "Writing measurable language objectives with Bloom's Taxonomy: verb choice, task, and evidence",
+    'Proficiency Level Descriptors 1–6: what changes, what never changes',
+    'Scaffold clinic: sentence frames, word banks, graphic organizers',
+    'Arranging PAC meetings and parent communication: scheduling, notices, and interpretation',
+    'Special education and ML status — untangling the two',
+    'Progress monitoring records that stand up to audit'
+  ] },
+  { label: 'Marking Period 2 — Instruction & Assessment', span: 'November – January', topics: [
+    'Vocabulary that transfers: tiers, cognates, morphology',
+    'Oral language before written: structured talk routines',
+    'Formative assessment of language, not just content',
+    'Building and using rubrics for language performance tasks',
+    'Translanguaging as a teaching tool',
+    'Differentiating one lesson across three proficiency levels in the same room',
+    'Reading a complex text with Level 1–2 students',
+    "ACCESS testing logistics and test-prep that isn't test-prep",
+    'Writing progression: from labels to paragraphs'
+  ] },
+  { label: 'Marking Period 3 — Content Areas & Family', span: 'January – April', topics: [
+    'Language in Math: word problems and math discourse',
+    'Language in Science: explanation and cause/effect',
+    'Language in Social Studies: argument and source work',
+    'Language in ELA: narrative structure across proficiency levels',
+    'Lesson planning from the curriculum guide: building a week in Chalk and documenting adjustments',
+    'MLLs and AI: safe, useful classroom uses and what to never delegate',
+    'Working with interpreters and translators',
+    "Webb's Depth of Knowledge: raising task rigor without raising language load",
+    'Push-in instruction: co-teaching models in a content classroom'
+  ] },
+  { label: 'Marking Period 4 — Exit, Reflection & Sharing', span: 'April – June', topics: [
+    'Exit criteria: the 4.5 and A3 pathways',
+    'Former ML monitoring F1–F4 — what to document',
+    'Gifted, honors, and AP access for MLs',
+    'Student-led conferences and self-assessment',
+    "Lesson study: one teacher's recorded lesson, group analysis",
+    'What worked this year — data walk',
+    'Curriculum revision feedback for next year',
+    'Newcomer summer transition planning',
+    'Cohort showcase: best strategy from each teacher'
+  ] }
+];
+
+const KLUS = [
+  { name: 'Narrate', what: 'Tell what happened, in sequence.', frame: '“First… then… finally…”' },
+  { name: 'Inform', what: 'Give facts and characteristics.', frame: '“___ is a type of ___ that has ___.”' },
+  { name: 'Explain', what: 'Give reasons why or how; cause and effect.', frame: '“This happens because ___. As a result, ___.”' },
+  { name: 'Argue', what: 'Make a claim and support it with evidence.', frame: '“I claim that ___ because the evidence shows ___.”' }
+];
+
+const BLOOMS = [
+  { level: 'Remember', verbs: 'list, name, identify, label, recall, define' },
+  { level: 'Understand', verbs: 'describe, summarize, classify, compare, paraphrase' },
+  { level: 'Apply', verbs: 'solve, demonstrate, illustrate, implement, use' },
+  { level: 'Analyze', verbs: 'differentiate, organize, examine, categorize, contrast' },
+  { level: 'Evaluate', verbs: 'judge, critique, justify, defend, argue, assess' },
+  { level: 'Create', verbs: 'compose, design, construct, generate, formulate, produce' }
+];
+
+const PLDS = [
+  { n: '1', name: 'Entering', desc: 'Single words, short phrases, memorized chunks; heavy reliance on visuals and gestures.', sample: '“Habitat. Small. No food.”' },
+  { n: '2', name: 'Emerging', desc: 'General, everyday language; short simple sentences; needs word and phrase banks.', sample: '“The animals have less food. They move away.”' },
+  { n: '3', name: 'Developing', desc: 'Expanded sentences; general plus some specific academic vocabulary; needs frames.', sample: '“The habitat got smaller, so the animals don’t have enough food.”' },
+  { n: '4', name: 'Expanding', desc: 'A variety of sentence types; specific and technical vocabulary; occasional errors.', sample: '“Because the habitat shrank, the population lost most of its food source, so many animals had to migrate.”' },
+  { n: '5', name: 'Bridging', desc: 'Complex sentences near grade level; technical and abstract vocabulary; near-independent.', sample: '“As the habitat became fragmented, the population’s access to food resources declined sharply, forcing migration.”' },
+  { n: '6', name: 'Reaching', desc: 'Comparable to grade-level peers; full independence with content-area register.', sample: 'Matches a grade-level peer in complexity, precision, and control of scientific register.' }
+];
+
+const BANDS = [
+  { band: 'PreK', name: 'Preschool', focus: 'Play-based and oral-language-heavy. Participation in routines, songs, and shared reading rather than independent writing.', objective: 'Narrate by retelling a story sequence using picture cards.', scaffold: 'Gestures, realia, repeated refrains, peer modeling.' },
+  { band: 'K', name: 'Kindergarten', focus: 'Oral language still primary; print awareness and early writing enter. Content areas begin to differentiate.', objective: 'Inform by describing a shape’s attributes using “This is a ___. It has ___.”', scaffold: 'Sentence frames on anchor charts.' },
+  { band: '1', name: 'Grade 1', focus: 'Independent writing begins in earnest — labels to simple sentences to short paragraphs.', objective: 'Narrate by composing a two- to three-sentence recount using time-order words.', scaffold: 'Time-order word banks posted during writing time.' },
+  { band: '2–3', name: 'Grades 2–3', focus: 'The bridge band: narrative moves toward informational and explanatory writing; vocabulary load rises sharply.', objective: 'Explain by illustrating why plants need sunlight, using a diagram and “because.”', scaffold: 'Cause/effect frames plus a labeled diagram.' },
+  { band: '4–5', name: 'Grades 4–5', focus: 'Academic writing expectations jump: multi-paragraph responses, textual evidence, content-specific argument.', objective: 'Argue by justifying a character’s decision, citing one piece of text evidence.', scaffold: 'Claim / evidence / reasoning organizers, color-coded by function.' },
+  { band: '6–8', name: 'Grades 6–8', focus: 'Content becomes departmentalized and abstract; synthesis across sources and extended explanation expected.', objective: 'Explain by analyzing causes and effects of an ecosystem disturbance, using academic connectors.', scaffold: 'Explicitly teach connectors: because, as a result, this leads to.' },
+  { band: '9–12', name: 'Grades 9–12', focus: 'Near grade-level register expected by Bridging and Reaching: extended argument, disciplinary literacy, abstract reasoning.', objective: 'Argue by justifying a preferred solving method, using precise mathematical reasoning.', scaffold: 'Sentence-combining and vocabulary-upgrade tasks — the gap is precision, not communication.' }
+];
+
+const REGS = [
+  { cite: 'N.J.A.C. 6A:15 — Bilingual Education', what: 'Governs identification, program models, and exit for New Jersey MLs. Every LEA follows the same three-step identification process for students ages 3–21.' },
+  { cite: 'ESSA §1112(e)(3) — Parent Notification', what: 'Written notice of identification and placement within 30 calendar days of the start of the year, or 14 calendar days for later enrollees, in a language the family understands.' },
+  { cite: 'NJDOE Title III', what: 'Three-Year Plan requirements: at least one daily period of ESL instruction per ML, three annual PAC meetings, and annual program evaluation.' },
+  { cite: 'NJ Exit Standard', what: '4.5 or higher composite on ACCESS for ELLs or WIDA MODEL, or A3 (3.0+) on Alternate ACCESS, plus a completed English Language Observation Form.' },
+  { cite: '34 C.F.R. §200.16(c) — MLs with disabilities', what: 'When no appropriate accommodation exists for a domain, identification and exit may use a composite of the assessed domains. NJ applies WIDA’s Less Than Four Domains, Model 2.' },
+  { cite: 'IDEA 34 CFR §300.324(a)(2)(ii)', what: 'The IEP team must consider the language needs of a child with limited English proficiency as they relate to the IEP.' },
+  { cite: 'NJSLEDS reporting', what: 'Former-ML status is reported for four years after exit (F1 through F4); academic monitoring runs for the first two.' }
+];
+
+const CONTACTS = [
+  { who: 'ESL / Bilingual Department Head — Ms. Cosgun', how: 'gcosgun@ilearnschools.org' },
+  { who: 'NJDOE Office of Supplemental Educational Programs', how: 'ML@doe.nj.gov · (609) 376-9080' },
+  { who: 'NJDOE Office of Assessments', how: 'assessment@doe.nj.gov' },
+  { who: 'WIDA Help Desk', how: 'help@wida.us · (866) 276-7735' },
+  { who: 'WIDA AMS / test materials', how: 'wida@datarecognitioncorp.com · (855) 787-9615' },
+  { who: 'Full NJDOE guidance', how: 'nj.gov/education/title3' }
+];
+
+const CHALK_URL = 'https://isi-5212.chalk.com/curriculum/subjects';
+const CHALK_PUBLIC_URL = 'https://isi-5212.chalk.com/public';
+const CURRICULUM_GROUPS = [
+  { label: 'Curriculum Guides by Grade Band', note: 'Board-approved ESL curriculum documents. One guide per band, revised annually.', docs: [
+    { name: 'ESL Curriculum Guide — Grades K–2', meta: 'Curriculum Guide', status: 'Open in Chalk' },
+    { name: 'ESL Curriculum Guide — Grades 3–5', meta: 'Curriculum Guide', status: 'Open in Chalk' },
+    { name: 'ESL Curriculum Guide — Grades 6–8', meta: 'Curriculum Guide', status: 'Open in Chalk' },
+    { name: 'ESL Curriculum Guide — Grades 9–12', meta: 'Curriculum Guide', status: 'Open in Chalk' }
+  ] }
+];
+
+/* ============================= STORE (persisted data entry) ============================= */
+const STORE_KEY = 'esl_portal_store_v1';
+let STORE = {};
+try { STORE = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { STORE = {}; }
+function saveStore(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); }catch(e){} }
+function sget(key, def){ return (STORE[key] === undefined || STORE[key] === null) ? def : STORE[key]; }
+function sset(key, val, opts){
+  STORE[key] = val;
+  saveStore();
+  if (fbRef && !(opts && opts.fromRemote)) {
+    fbRef.child(fbKey(key)).set(val).catch(err => console.warn('[sync] write failed', key, err));
+  }
+}
+// Firebase RTDB keys can't contain '.', '#', '$', '[', ']', '/'. Our keys are plain
+// text with colons/commas/parens which are all safe, but encode defensively anyway.
+function fbKey(key){ return encodeURIComponent(key).replace(/\./g, '%2E'); }
+function fbKeyDecode(key){ return decodeURIComponent(key); }
+
+/* Patch a single already-rendered field in place (no full re-render) so a live
+   update from another user's browser never steals focus or a half-typed value
+   from whoever is looking at this screen right now. */
+function patchFieldInDom(key, val){
+  document.querySelectorAll('[data-store]').forEach(el => {
+    if (el.dataset.store === key && document.activeElement !== el) el.value = (val == null ? '' : val);
+  });
+  document.querySelectorAll('[data-store-check]').forEach(el => {
+    if (el.dataset.storeCheck === key) el.checked = !!val;
+  });
+  document.querySelectorAll('[data-store-select]').forEach(el => {
+    if (el.dataset.storeSelect === key && document.activeElement !== el) {
+      el.value = val || 'Not started';
+      const col = statusColors(el.value);
+      el.style.background = col.bg; el.style.color = col.color;
+    }
+  });
+}
+
+function initFirebaseSync(){
+  if (typeof firebase === 'undefined') { console.warn('[sync] Firebase SDK did not load — running in local-only mode.'); return; }
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    fbRef = firebase.database().ref('store');
+
+    firebase.database().ref('.info/connected').on('value', snap => {
+      setSyncStatus(!!snap.val());
+    });
+
+    let gotInitialSnapshot = false;
+    fbRef.on('value', snap => {
+      const remote = snap.val() || {};
+      let changed = false;
+      for (const encKey in remote) {
+        const key = fbKeyDecode(encKey);
+        const val = remote[encKey];
+        if (STORE[key] !== val) {
+          STORE[key] = val;
+          changed = true;
+          if (gotInitialSnapshot) patchFieldInDom(key, val);
+        }
+      }
+      saveStore();
+      if (!gotInitialSnapshot) {
+        gotInitialSnapshot = true;
+        firebaseReady = true;
+        renderAll(); // one full repaint once shared data has arrived
+      }
+    }, err => console.warn('[sync] listener error', err));
+
+    // One-time reconciliation: anything in local STORE not yet in Firebase gets pushed up.
+    fbRef.once('value').then(snap => {
+      const remote = snap.val() || {};
+      const updates = {};
+      for (const key in STORE) {
+        if (!(fbKey(key) in remote) && STORE[key] !== undefined && STORE[key] !== null && STORE[key] !== '') {
+          updates[fbKey(key)] = STORE[key];
+        }
+      }
+      if (Object.keys(updates).length) fbRef.update(updates).catch(()=>{});
+    });
+  } catch (err) {
+    console.warn('[sync] Firebase init failed — running in local-only mode.', err);
+  }
+}
+
+function setSyncStatus(connected){
+  firebaseConnected = connected;
+  const el = document.getElementById('syncStatus');
+  if (el) {
+    el.textContent = connected ? 'Live — shared with everyone' : 'Offline — changes saved on this device only';
+    el.style.color = connected ? '#1E4620' : '#9592A6';
+    el.previousElementSibling && (el.previousElementSibling.style.background = connected ? '#2E7D32' : '#BDBDBD');
+  }
+}
+
+/* ============================= STATE (transient nav) ============================= */
+let state = { screen: 'dash', role: 'director', campus: 'All Campuses', lang: 'English', letter: 'initial' };
+
+/* ============================= UTIL ============================= */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function icon(name, style){ return `<span class="mi" style="${style||''}">${name}</span>`; }
+
+/* ============================= SIDEBAR ============================= */
+function renderSidebar(){
+  const groups = NAV_DEFS.map(g => `
+    <div style="font:500 11px/1 Roboto,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.6);padding:18px 20px 6px">${esc(g.label)}</div>
+    ${g.items.map(([id, ic, label]) => `
+      <button class="navbtn ${state.screen===id?'active':''}" data-nav="${id}">
+        ${icon(ic, 'font-size:20px')}${esc(label)}
+      </button>`).join('')}
+  `).join('');
+
+  return `
+    <div style="padding:0 16px 14px;border-bottom:1px solid rgba(0,0,0,.12)">${LOGO_SVG}</div>
+    <div style="padding:14px 16px 4px">
+      <label style="font:400 11px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);display:block;margin-bottom:5px">Campus</label>
+      <select id="campusSelect" style="width:100%;height:38px;padding:0 8px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.87)">
+        <option ${state.campus==='All Campuses'?'selected':''}>All Campuses</option>
+        ${CAMPUSES.map(c => `<option ${state.campus===c?'selected':''}>${esc(c)}</option>`).join('')}
+      </select>
+    </div>
+    ${groups}
+    <div style="flex:1"></div>
+    <div style="margin:24px 16px 0;padding:14px;background:#FAFAFA;border-radius:5px">
+      <div style="font:500 12px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.87)">Department Head</div>
+      <div style="font:400 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Ms. Cosgun<br>gcosgun@ilearnschools.org</div>
+    </div>
+  `;
+}
+
+/* ============================= HEADER ============================= */
+function renderHeader(){
+  const roleDef = ROLE_DEFS.find(r => r.id === state.role) || ROLE_DEFS[0];
+  return `
+  <div class="card" style="padding:18px 24px;display:flex;align-items:center;gap:16px">
+    <div style="min-width:0">
+      <div style="font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">iLEMIS<span style="margin:0 8px;opacity:.4">/</span>ESL &amp; Bilingual Department</div>
+      <h1 style="font:400 24px/1.3 Roboto,sans-serif;margin:4px 0 0">${esc(TITLES[state.screen] || 'Department Dashboard')}</h1>
+      <div style="font:400 13px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">2026 – 2027 School Year<span style="margin:0 8px;opacity:.4">|</span>${esc(state.campus)}</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+        <span style="width:8px;height:8px;border-radius:50%;background:${firebaseConnected?'#2E7D32':'#BDBDBD'};flex-shrink:0"></span>
+        <span id="syncStatus" style="font:400 11.5px/1 Roboto,sans-serif;color:${firebaseConnected?'#1E4620':'#9592A6'}">${firebaseConnected?'Live — shared with everyone':'Connecting…'}</span>
+      </div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:520px">
+      ${ROLE_DEFS.map(r => `<button class="rolebtn ${state.role===r.id?'active':''}" data-role="${r.id}">${esc(r.label)}</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: DASHBOARD ============================= */
+function statusColors(status){
+  if (status === 'Complete') return { bg:'#E8F5E9', color:'#1E4620' };
+  if (status === 'In progress') return { bg:'#FFF1DE', color:'#E07A00' };
+  return { bg:'#F5F5F5', color:'rgba(0,0,0,.87)' };
+}
+function renderDash(){
+  const roleDef = ROLE_DEFS.find(r => r.id === state.role) || ROLE_DEFS[0];
+  const rows = state.campus === 'All Campuses' ? CAMPUSES : [state.campus];
+  return `
+  <div style="display:flex;align-items:flex-start;gap:12px;background:#FDECEA;border-radius:4px;padding:14px 18px">
+    ${icon('error_outline','font-size:22px;color:#D32F2F')}
+    <div><div style="font:500 14px/1.4 Roboto,sans-serif;color:#5F2120">Hard deadline — September 18, 2026</div>
+    <div style="font:400 13px/1.6 Roboto,sans-serif;color:#5F2120;margin-top:2px">Identification must be 100% complete for every student: Home Language Survey, Records Review, and ELP screening, fully documented. No exceptions, no extensions.</div></div>
+  </div>
+
+  <div class="g4">
+    ${[
+      ['record_voice_over','#FF9215','Identified MLs','dashMetric:ml'],
+      ['groups','#0074C8','Stand-alone (Pull-out)','dashMetric:pullout'],
+      ['merge_type','#9747FF','Integrated (Push-in)','dashMetric:pushin'],
+      ['visibility','#2E7D32','Former MLs monitored','dashMetric:fml']
+    ].map(([ic,bg,label,key]) => `
+      <div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:16px">
+        <div style="width:52px;height:52px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon(ic,'font-size:26px;color:#fff')}</div>
+        <div>
+          <input class="entry" style="min-width:74px;height:38px;font:700 22px/1 MuseoModerno,sans-serif;color:#1a1a1a" data-store="${key}" value="${esc(sget(key,''))}" placeholder="—">
+          <div style="font:400 13px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:6px">${label}</div>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div class="gmain">
+    <div class="tcard card">
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid rgba(0,0,0,.12)">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1;letter-spacing:.15px">Program Status by Campus</h3>
+        <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Enter counts per campus</span>
+      </div>
+      <table style="width:100%;min-width:600px;border-collapse:collapse">
+        <thead><tr>
+          <th style="text-align:left;padding:12px 20px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Campus</th>
+          <th style="text-align:left;padding:12px 10px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);width:76px">MLs</th>
+          <th style="text-align:left;padding:12px 10px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);width:88px">Screened</th>
+          <th style="text-align:left;padding:12px 10px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);width:76px">FMLs</th>
+          <th style="text-align:left;padding:12px 20px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);min-width:150px">Identification</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(name => {
+            const status = sget('camp:'+name+':status','Not started');
+            const col = statusColors(status);
+            return `<tr>
+              <td style="padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.12);font:400 13.5px/1.4 Roboto,sans-serif">
+                <span style="display:inline-flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:#FF9215;flex-shrink:0"></span>${esc(name)}</span>
+              </td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:ml" value="${esc(sget('camp:'+name+':ml',''))}" placeholder="—"></td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:screened" value="${esc(sget('camp:'+name+':screened',''))}" placeholder="—"></td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:fml" value="${esc(sget('camp:'+name+':fml',''))}" placeholder="—"></td>
+              <td style="padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.12)">
+                <select class="status-select" data-store-select="camp:${esc(name)}:status" style="background:${col.bg};color:${col.color}">
+                  <option ${status==='Not started'?'selected':''}>Not started</option>
+                  <option ${status==='In progress'?'selected':''}>In progress</option>
+                  <option ${status==='Complete'?'selected':''}>Complete</option>
+                </select>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="padding:20px">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px"><h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1;letter-spacing:.15px">Your Open Items</h3><span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">${esc(roleDef.label)}</span></div>
+        <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 8px">${esc(roleDef.note)}</p>
+        <div style="display:flex;flex-direction:column">
+          ${roleDef.tasks.map(t => `
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid #F5F5F5">
+              ${icon('radio_button_unchecked','font-size:20px;color:rgba(0,0,0,.38)')}
+              <div style="flex:1"><div style="font:500 13.5px/1.4 Roboto,sans-serif">${esc(t.title)}</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:2px">${esc(t.meta)}</div></div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="card" style="padding:20px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 10px;letter-spacing:.15px">Non-Negotiable Expectations</h3>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          ${[
+            'Instruction begins immediately once a student’s identification is complete.',
+            'Lesson plans shared weekly (Fridays) with the Department Head and school ADA.',
+            'Push-in journals completed for every integrated session.',
+            'PLC days and PAC meetings are mandatory for ESL and bilingual staff.',
+            'Approved ESL curriculum only — Connect (K–5), English 3D (6–12).',
+            'Exit procedures completed as soon as criteria are met — never held to June.'
+          ].map(t => `<div style="display:flex;gap:10px">${icon('check','font-size:18px;color:#2E7D32')}<span style="font:400 13px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.87)">${t}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: TIMELINE ============================= */
+function renderTimeline(){
+  return `
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Year at a Glance</h3>
+      <span class="badge" style="background:#FFF1DE;color:#E07A00">Dates follow the iLearn 2026–2027 NJ Academic Calendar</span>
+    </div>
+    <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 18px;max-width:920px">Every ESL teacher and aide is responsible for meeting each item below. Marking periods: Q1 Aug 24 – Oct 30, Q2 Nov 2 – Jan 22, Q3 Jan 25 – Apr 9, Q4 Apr 12 – Jun 17.</p>
+    <div style="display:flex;flex-direction:column">
+      ${TIMELINE_ROWS.map(t => `
+        <div style="display:flex;gap:20px;padding:14px 0;border-top:1px solid #F5F5F5">
+          <div style="width:190px;flex-shrink:0">
+            <div style="font:700 15px/1.3 MuseoModerno,sans-serif;letter-spacing:.02em;color:rgba(0,0,0,.87)">${esc(t.date)}</div>
+            <div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:3px">${esc(t.sub)}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font:500 14px/1.5 Roboto,sans-serif">${esc(t.title)}</div>
+            <div style="font:400 13px/1.7 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">${esc(t.body)}</div>
+          </div>
+          <div style="width:118px;flex-shrink:0;text-align:right">
+            <span class="badge" style="background:#F5F5F5;color:rgba(0,0,0,.6)">${esc(t.tag)}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: IDENTIFICATION ============================= */
+function renderIdent(){
+  return `
+  <div class="g3">
+    <div class="card" style="padding:20px;border-top:3px solid #0074C8">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="width:26px;height:26px;border-radius:50%;background:#0074C8;color:#fff;font:700 13px/26px MuseoModerno,sans-serif;text-align:center">1</span><span style="font:500 15px/1.4 Roboto,sans-serif">Home Language Survey</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Given to every enrolled student ages 3–21, regardless of birthplace or how the student presents in English.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Completed by a parent/guardian or trained intake staff, verbally or in writing, in a language the family understands.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Questions are read verbatim when given orally — clarify, never lead.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Kept in the permanent record whether or not the student is identified.</div>
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">New teacher tip: request the HLS in the family's home language before intake day — translated forms exist in 20+ languages.</div>
+    </div>
+    <div class="card" style="padding:20px;border-top:3px solid #0074C8">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="width:26px;height:26px;border-radius:50%;background:#0074C8;color:#fff;font:700 13px/26px MuseoModerno,sans-serif;text-align:center">2</span><span style="font:500 15px/1.4 Roboto,sans-serif">Records Review</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Conducted by a staff member holding a valid NJ instructional certificate.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Review all records, including out-of-district and out-of-state; note the language of prior assessments and scores.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Add classroom observations using WIDA rubrics; interview student and family in the primary language when possible.</div>
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;background:#FAFAFA;border-radius:4px">
+        <div style="font:500 12.5px/1.5 Roboto,sans-serif;margin-bottom:6px">Two documented indicators</div>
+        <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)"><strong>1.</strong> Never identified as ML and enrolled 3+ consecutive years in an English-medium U.S. school → Yes ends the process.</div>
+        <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:5px"><strong>2.</strong> Previously identified and exited via an approved WIDA ELP assessment within the past school year → Yes ends the process.</div>
+        <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.87);margin-top:6px">Both "No" → proceed to Step 3.</div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px;border-top:3px solid #0074C8">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="width:26px;height:26px;border-radius:50%;background:#0074C8;color:#fff;font:700 13px/26px MuseoModerno,sans-serif;text-align:center">3</span><span style="font:500 15px/1.4 Roboto,sans-serif">ELP Screener</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Administered by a bilingual/ESL-certified teacher using the NJDOE-approved WIDA Screener (Kindergarten or Grades 1–12 form).</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">As of June 30, 2025 the WIDA Screener is the only approved identification tool — the MODEL Screener was discontinued.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Kindergarten before Jan 1: Listening &amp; Speaking only, 4.5 cut on Oral Proficiency. After Jan 1: all four domains.</div>
+        <div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Keep a roster of everyone screened — test name, date, composite — regardless of outcome.</div>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px">
+        <div style="flex:1;background:#FAFAFA;border-radius:4px;padding:12px;text-align:center"><div style="font:700 24px/1 MuseoModerno,sans-serif">&lt; 4.5</div><div style="font:400 11.5px/1.4 Roboto,sans-serif;color:#9592A6;margin-top:4px">Identified as ML</div></div>
+        <div style="flex:1;background:#FAFAFA;border-radius:4px;padding:12px;text-align:center"><div style="font:700 24px/1 MuseoModerno,sans-serif">≥ 4.5</div><div style="font:400 11.5px/1.4 Roboto,sans-serif;color:#9592A6;margin-top:4px">Not an ML</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:20px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">When to Start the Process</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Any one of these triggers the three-step process.</p>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        ${[
+          'A new student enrolls and any language other than English is spoken at home — regardless of birthplace.',
+          'The student was born outside the U.S. or in Puerto Rico.',
+          'A parent, guardian, or the student mentions a home language — or you overhear one.',
+          'A transfer student arrives with unclear, incomplete, or out-of-state records.',
+          "A returning student's file has no HLS on record."
+        ].map(t => `<div style="display:flex;gap:10px">${icon('arrow_right','font-size:18px;color:#E07A00')}<span style="font:400 13px/1.6 Roboto,sans-serif">${t}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="padding:20px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Key Timelines</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[
+          ['At intake','Home Language Survey, every student ages 3–21.'],
+          ['30 / 14 days','Parent notification of ML identification — 30 calendar days if enrolled at the start of the year, 14 if enrolled after.'],
+          ['Annually','ACCESS or Alternate ACCESS during the state window, every year a student remains an ML.'],
+          ['2 &amp; 4 years','Former-ML monitoring for 2 years; NJSLEDS reporting for 4 years post-exit (F1–F4).'],
+          ['10 days','Records transfer to a new district.']
+        ].map(([k,v]) => `<div style="display:flex;gap:14px;align-items:baseline"><span style="font:700 16px/1.3 MuseoModerno,sans-serif;width:96px;flex-shrink:0">${k}</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${v}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="g3">
+    ${[
+      ['Preschool (PreK-3 to PreK-5)','Steps 1 and 2 apply as written; there is no ELP test at the preschool level. If review indicates the student may be an ML, identify as a preschool ML (Step 2a) and administer the screener before the Kindergarten year begins.'],
+      ['Students with IEP / 504','Convene the child study team plus staff with language-acquisition expertise. There is no exemption from ELP screening based on disability — assess with the accommodations in the IEP/504. ML and special education services run simultaneously; neither status delays the other.'],
+      ['Transfer Students','HLS and Records Review always apply. A score under one school year old from another NJ district or WIDA-consortium state may be accepted; transfers from non-WIDA states must be screened. The 30/14-day notification clock still runs.']
+    ].map(([title,body]) => `
+      <div class="card" style="padding:20px">
+        <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">Special Populations</div>
+        <h3 style="font:500 15px/1.5 Roboto,sans-serif;margin:0 0 8px">${title}</h3>
+        <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0">${body}</p>
+      </div>`).join('')}
+  </div>
+
+  ${identPrintForm()}
+  `;
+}
+
+function identPrintForm(){
+  return `
+  <div class="card" style="padding:24px 28px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Identification Record — Print Form</h3>
+      <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Read-only. Print, complete by hand, and file in the ML folder.</span>
+      <button class="btn-outline no-print" data-print="1">${icon('print','font-size:18px')}Print</button>
+    </div>
+    <div class="sheet" style="border:1px solid #E0E0E0;border-radius:4px;padding:28px 32px;max-width:900px">
+      <div style="font:400 12px/2 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.6)">iLearn Schools · ESL &amp; Bilingual Department</div>
+      <div style="font:500 20px/1.4 Roboto,sans-serif;margin-bottom:20px">Multilingual Learner Identification Record</div>
+      <div class="gform">
+        ${['Student Id:','Grade:','Campus:','Date of Enrollment:'].map(l => `<div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${l}</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div></div>`).join('')}
+      </div>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Step 1 — Home Language Survey</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">HLS administered on:</span><span style="flex:1;border-bottom:1px solid #BDBDBD;height:20px;max-width:180px"></span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Language(s) used at home:</span><span style="flex:1;border-bottom:1px solid #BDBDBD;height:20px"></span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Result: proceed to Records Review</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0;margin-left:20px"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Result: not an ML — process complete</span></div>
+      </div>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Step 2 — Records Review</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:400 13px/1.6 Roboto,sans-serif;flex:1">Indicator 1 — never identified and 3+ consecutive years in an English-medium U.S. school</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Yes</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">No</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:400 13px/1.6 Roboto,sans-serif;flex:1">Indicator 2 — previously identified and exited via an approved WIDA ELP assessment</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Yes</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">No</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Reviewer (NJ certificated staff):</span><span style="flex:1;border-bottom:1px solid #BDBDBD;height:20px"></span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Date:</span><span style="width:130px;border-bottom:1px solid #BDBDBD;height:20px"></span></div>
+      </div>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Step 3 — WIDA Screener</div>
+      <div class="gform3">
+        ${['Form administered:','Date administered:','Overall composite score:'].map(l => `<div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${l}</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div></div>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:16px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Below 4.5 — student is identified as a Multilingual Learner</span><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0;margin-left:20px"></span><span style="font:400 13px/1.6 Roboto,sans-serif">4.5 or above — student is not an ML</span></div>
+      <div style="display:flex;gap:28px;margin-top:26px">
+        <div style="flex:1"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Bilingual/ESL-certified staff signature</div></div>
+        <div style="width:180px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Date</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: SERVICE & INSTRUCTION ============================= */
+function renderService(){
+  return `
+  <div class="gmain">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Placement Threshold</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Each ML receives at least one period of ESL instruction daily. The delivery model follows the student's WIDA proficiency level.</p>
+      <div style="display:flex;height:38px;border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="flex:1;background:#0074C8;color:#fff;font:500 13px/38px Roboto,sans-serif;text-align:center">1.0</div>
+        <div style="flex:1;background:#2C87CE;color:#fff;font:500 13px/38px Roboto,sans-serif;text-align:center">2.0</div>
+        <div style="flex:.9;background:#5AA5DC;color:#fff;font:500 13px/38px Roboto,sans-serif;text-align:center">2.9</div>
+        <div style="flex:1;background:#FFB45A;color:#1A1A1A;font:500 13px/38px Roboto,sans-serif;text-align:center">3.0</div>
+        <div style="flex:1;background:#FF9215;color:#1A1A1A;font:500 13px/38px Roboto,sans-serif;text-align:center">4.0</div>
+        <div style="flex:1;background:#2E7D32;color:#fff;font:500 13px/38px Roboto,sans-serif;text-align:center">4.5+</div>
+      </div>
+      <div class="g2" style="margin-top:14px">
+        <div>
+          <div style="font:500 14px/1.4 Roboto,sans-serif;color:#006DBD">At or below 2.9 — Stand-alone (Pull-out)</div>
+          <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:6px 0 0">Small-group ESL taught by an ESL-certified teacher on the district curriculum. Pull from ELA or Balanced Literacy first; if scheduling prevents it, try Social Studies, then Science, then Math. Coordinate with the classroom teacher so no ML is disadvantaged by missing class.</p>
+        </div>
+        <div>
+          <div style="font:500 14px/1.4 Roboto,sans-serif;color:#E07A00">At or above 3.0 — Integrated (Push-in)</div>
+          <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:6px 0 0">Language support inside the mainstream class, co-planned with the content teacher: adapted materials, scaffolds, differentiated tasks. A journal entry is required for every push-in period.</p>
+        </div>
+      </div>
+      <div class="hairline" style="margin:20px 0"></div>
+      <div style="font:500 14px/1.5 Roboto,sans-serif;margin-bottom:8px">High School Program of Study</div>
+      <div class="g2" style="gap:12px">
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px">
+          <div style="font:500 13.5px/1.4 Roboto,sans-serif">ESL I · 5 credits</div>
+          <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Prerequisite: WIDA level 1–2.5. Beginning course building social and academic English with reading and writing fluency.</div>
+        </div>
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px">
+          <div style="font:500 13.5px/1.4 Roboto,sans-serif">ESL II · 5 credits</div>
+          <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Prerequisite: WIDA level 2.6–3.9. Intermediate course across all four domains: vocabulary, grammar, reading strategies, essay writing.</div>
+        </div>
+      </div>
+      <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:10px">Students at or above level 4 receive inclusion (push-in) support.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="padding:20px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Approved Curriculum</h3>
+        <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">No substitute materials without department approval.</p>
+        <div style="display:flex;gap:12px">
+          <div style="flex:1;background:#FFF1DE;border-radius:4px;padding:14px"><div style="font:700 18px/1.2 MuseoModerno,sans-serif;color:#E07A00">Connect</div><div style="font:400 12.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Grades K–5</div></div>
+          <div style="flex:1;background:#FFF1DE;border-radius:4px;padding:14px"><div style="font:700 18px/1.2 MuseoModerno,sans-serif;color:#E07A00">English 3D</div><div style="font:400 12.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Grades 6–12</div></div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Required Documentation</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${[
+            ['description','ESL Pull-Out Lesson Plan','Weekly, due Friday for the following week'],
+            ['edit_note','ESL &amp; Bilingual Teacher Push-In Journal','One row per push-in period, daily'],
+            ['edit_note','Bilingual Aide Push-In Journal','One row per period, completed by the aide']
+          ].map(([ic,title,meta]) => `
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FAFAFA;border-radius:4px">${icon(ic,'font-size:22px;color:#E07A00')}<div style="flex:1"><div style="font:500 13.5px/1.4 Roboto,sans-serif">${title}</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">${meta}</div></div>${icon('open_in_new','font-size:20px;color:rgba(0,0,0,.38)')}</div>`).join('')}
+        </div>
+        <div style="margin-top:12px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Journal entries use the two-sentence frame: what you did, with whom, on what topic — then what happened, with evidence.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Sheltered English Instruction &amp; Benchmarks</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">For content teachers with at least one ML. Every handout, lesson, and assignment is sheltered in some form.</p>
+    <div class="g4">
+      ${[
+        ['Content &amp; Language Objectives','Both are posted daily. The language objective names what the student does with language during the lesson.'],
+        ['Vocabulary Tiers','Tier 1 needs little direct teaching; Tier 2 high-utility academic terms need continuous instruction; Tier 3 content-specific terms are taught in context.'],
+        ['Reading &amp; Writing','Think-alouds, partner reading, text-dependent questions; write-around and cut-and-grow. No round-robin reading. Respect the silent period.'],
+        ['Benchmarks','Below level 3 in grades 1–8: ESL teachers plan and grade the ELA benchmark. All MLs get bilingual dictionaries and extended time. No ML fails an assessment because of language.']
+      ].map(([title,body]) => `<div><div style="font:500 13.5px/1.5 Roboto,sans-serif;margin-bottom:6px">${title}</div><p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0">${body}</p></div>`).join('')}
+    </div>
+    <div style="margin-top:16px;padding:14px 16px;background:#FFF4E0;border-radius:4px;display:flex;gap:10px">${icon('warning','font-size:20px;color:#663C00')}<span style="font:400 13px/1.6 Roboto,sans-serif;color:#663C00">MLs below proficiency level 3.0 should not be expected to produce written work independently without extensive support.</span></div>
+  </div>`;
+}
+
+/* ============================= SCREEN: EXIT & RECLASSIFICATION ============================= */
+function renderExit(){
+  return `
+  <div class="g2">
+    <div class="card" style="padding:22px 24px;border-top:3px solid #2E7D32">
+      <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">Exit Step 1</div>
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">English Language Proficiency Standard</h3>
+      <div style="display:flex;gap:12px">
+        <div style="flex:1;background:#FAFAFA;border-radius:4px;padding:16px;text-align:center"><div style="font:700 32px/1 MuseoModerno,sans-serif">4.5</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:6px">or higher — ACCESS for ELLs or WIDA MODEL</div></div>
+        <div style="flex:1;background:#FAFAFA;border-radius:4px;padding:16px;text-align:center"><div style="font:700 32px/1 MuseoModerno,sans-serif">A3</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:6px">3.0 or higher — Alternate ACCESS</div></div>
+      </div>
+      <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:14px 0 0">A score alone is never enough — both the score and the observation form are required. There is no minimum or maximum number of years a student must remain in ML status.</p>
+      <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:10px 0 0">For a mid-year exit, WIDA MODEL may be used between October 1 and the start of the ACCESS window. A student exited this way is not eligible for ML accommodations on NJSLA.</p>
+    </div>
+    <div class="card" style="padding:22px 24px;border-top:3px solid #2E7D32">
+      <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">Exit Step 2</div>
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 10px">English Language Observation Form</h3>
+      <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 10px">Completed collaboratively, led by certified ESL or bilingual staff, with at least one content teacher present, based on observation in classes where English is the medium of instruction. Only completed when Step 1 is "Yes".</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[
+          'Listening — follows along, responds to spontaneous questions, asks for and gives clarification',
+          'Speaking — compared against what teachers elicit and what non-MLs produce',
+          'Achievement — benchmark performance and English reading level similar to non-ML peers'
+        ].map(t => `<div style="display:flex;gap:10px">${icon('check','font-size:18px;color:#2E7D32')}<span style="font:400 13px/1.6 Roboto,sans-serif">${t}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Determination must consider non-MLs in similar settings with similar characteristics — disability, grade level, educational background.</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">MLs with Disabilities — Alternate Composite</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">When no appropriate accommodation exists for a domain, exit may be based on a composite of the domains that were assessed. The cut score stays 4.5.</p>
+    <div class="g5" style="gap:14px">
+      ${[
+        ['Step 1','Convene the child study team plus the teacher providing language instruction.'],
+        ['Step 2','Review the IEP for developmental context, accommodations, and goals.'],
+        ['Step 3',"Determine exempt domains using WIDA's Accessibility and Accommodations Supplement."],
+        ['Step 4',"Apply NJ's Less Than Four policy — WIDA Model 2 assigns the rounded average of observed domains."],
+        ['Steps 5–6','Complete the observation form; document the determination in meeting minutes and in the IEP.']
+      ].map(([step,body]) => `<div style="background:#FAFAFA;border-radius:4px;padding:14px"><div style="font:700 13px/1.3 MuseoModerno,sans-serif;color:#E07A00">${step}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:5px">${body}</div></div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card" style="padding:24px 28px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">English Language Observation Form — Print Form</h3>
+      <button class="btn-outline no-print" data-print="1">${icon('print','font-size:18px')}Print</button>
+    </div>
+    <div class="sheet" style="border:1px solid #E0E0E0;border-radius:4px;padding:28px 32px;max-width:900px">
+      <div style="font:400 12px/2 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.6)">iLearn Schools · ESL &amp; Bilingual Department</div>
+      <div style="font:500 20px/1.4 Roboto,sans-serif;margin-bottom:6px">English Language Observation Form</div>
+      <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-bottom:20px">Complete only when Exit Step 1 is "Yes". Led by certified ESL/bilingual staff.</div>
+      <div class="gform3">
+        ${['Student Id:','Grade:','Meeting Date:','Certificated ESL/Bilingual Staff:','Student State Id:','Student Birth Date:'].map(l => `<div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${l}</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div></div>`).join('')}
+        <div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Other Staff in Attendance (names, titles, subjects):</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">At least one ELA and one Math teacher is mandatory.</div></div>
+        <div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Class Observed:</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div></div>
+      </div>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Listening used in the classroom (select all that apply)</div>
+      <div class="g2" style="gap:9px 24px">
+        ${['Listens and follows along','Responds to teacher questions','Interprets oral information to complete tasks','Responds to spontaneous questions appropriately','Asks for clarification if necessary','Provides clarification if necessary','Clears up misunderstandings by restating'].map(t => `<div style="display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">${t}</span></div>`).join('')}
+      </div>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Speaking used in the classroom</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tbody>
+          ${[
+            ['Teachers elicit responses that are mostly',['Words/phrases','A sentence','Connected sentences']],
+            ['Non-MLs use mostly',['Words/phrases','A sentence','Connected sentences']],
+            ['Observed student uses mostly',['Words/phrases','A sentence','Connected sentences']],
+            ['Uses language as expected for the task',['All or most of the time','Some of the time','Rarely']],
+            ['Achieves at levels similar to non-ML peers',['All or most of the time','Some of the time','Rarely']]
+          ].map(([label,opts]) => `<tr><td style="padding:8px 0;font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);width:44%">${label}</td><td style="padding:8px 0"><span style="display:inline-flex;gap:18px">${opts.map(o=>`<span style="display:inline-flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6)"></span><span style="font:400 13px/1.6 Roboto,sans-serif">${o}</span></span>`).join('')}</span></td></tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="hairline"></div>
+      <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Final Decision</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Student is exited from ML status — "Yes" on Exit Steps 1 and 2</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0"></span><span style="font:400 13px/1.6 Roboto,sans-serif">Student remains an ML — "No" on Exit Step 1 and/or 2</span></div>
+      </div>
+      <div style="display:flex;gap:28px;margin-top:26px">
+        <div style="flex:1"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Certificated ESL/Bilingual staff signature</div></div>
+        <div style="width:180px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Date</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: FORMER ML MONITORING ============================= */
+function renderFml(){
+  return `
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Monitoring Window</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 16px">Two years of academic progress monitoring; four years of NJSLEDS reporting.</p>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1;height:10px;border-radius:9999px;background:#9747FF"></div>
+        <div style="flex:1;height:10px;border-radius:9999px;background:#B47AFF"></div>
+        <div style="flex:1;height:10px;border-radius:9999px;background:#DCC4FF"></div>
+        <div style="flex:1;height:10px;border-radius:9999px;background:#EFE4FF"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font:500 12px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.87);text-align:center">
+        <div>F1</div><div>F2</div><div>F3</div><div>F4</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font:400 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);text-align:center;margin-top:4px">
+        <div>Active monitoring</div><div>Active monitoring</div><div>Reporting only</div><div>Reporting only</div>
+      </div>
+      <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:16px 0 0">ESL teachers monitor progress reports and report card grades. If anomalies appear, check in with the content teacher and the student to determine what support is needed.</p>
+    </div>
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Re-Entry Criteria</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[
+          ['6 mo – 2 yr','Window after initial exit in which re-entry may be considered.'],
+          ['Evidence','Documented observation from a teacher delivering instruction in English that the student is struggling because of English proficiency.'],
+          ['Retest','Must use a different form of the ELP assessment than the one used to exit.'],
+          ['Notice','If classification changes, the ESL teacher notifies the family; the opt-out right still applies. File the notice in the ML folder.']
+        ].map(([k,v]) => `<div style="display:flex;gap:12px;align-items:baseline"><span style="font:700 16px/1.3 MuseoModerno,sans-serif;width:118px;flex-shrink:0">${k}</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${v}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Monitoring Log</h3>
+      <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Enter counts and dates per marking period</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Monitoring Year</th>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Q1 Review</th>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Q2 Review</th>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Q3 Review</th>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Q4 Review</th>
+        <th style="text-align:left;padding:12px 14px;font:500 13px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Flagged for Re-Entry</th>
+      </tr></thead>
+      <tbody>
+        ${FML_ROWS.map(r => `
+          <tr>
+            <td style="padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.12);font:500 13.5px/1.4 Roboto,sans-serif">${r.label}</td>
+            ${['q1','q2','q3','q4'].map(q => `<td style="padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" style="min-width:100px" data-store="fml:${r.key}:${q}" value="${esc(sget('fml:'+r.key+':'+q,''))}" placeholder="—"></td>`).join('')}
+            <td style="padding:12px 14px;border-bottom:1px solid rgba(0,0,0,.12);text-align:center"><input type="checkbox" class="chk" data-store-check="fml:${r.key}:flag" ${sget('fml:'+r.key+':flag',false)?'checked':''}></td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">ML Student File Checklist</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Every ML and former ML has a file, kept in a locked cabinet in the ESL teacher's office.</p>
+    <div class="g3" style="gap:10px 24px">
+      ${FILE_CHECKLIST.map((f,i) => `
+        <label style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F5F5F5;cursor:pointer">
+          <input type="checkbox" class="chk" style="border-radius:2px" data-store-check="filechk:${i}" ${sget('filechk:'+i,false)?'checked':''}>
+          <span style="font:400 13px/1.5 Roboto,sans-serif">${f}</span>
+        </label>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: PARENT NOTICES ============================= */
+function renderNotices(){
+  const letter = LETTER_LIB[state.letter] || LETTER_LIB.initial;
+  return `
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div><h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0">Letter Templates</h3><p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:2px 0 0">Notices must be provided in a language comprehensible to the parent. Email is acceptable if it carries all required elements.</p></div>
+      <div style="flex:1"></div>
+      <div>
+        <label style="font:400 11px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);display:block;margin-bottom:5px">Letter language</label>
+        <select id="langSelect" style="height:38px;padding:0 10px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:400 13px/1 Roboto,sans-serif;min-width:190px">
+          ${['English','Spanish','Arabic','Turkish','Bengali','Haitian Creole','Portuguese','Urdu','Gujarati'].map(l => `<option ${state.lang===l?'selected':''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="g3" style="gap:14px;margin-top:18px">
+      ${LETTER_IDS.map(id => {
+        const l = LETTER_LIB[id];
+        const open = state.letter === id;
+        return `
+        <div class="card" data-letter="${id}" style="border:1px solid #E0E0E0;box-shadow:none;padding:16px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${icon(l.icon,'font-size:20px;color:#E07A00')}<span style="font:500 14px/1.4 Roboto,sans-serif;flex:1">${l.title}</span><span style="font:500 11px/1 Roboto,sans-serif;color:#E07A00">${open?'Open':'View'}</span></div>
+          <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${l.cardBody}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
+            <span class="badge" style="background:#FFF1DE;color:#E07A00">${l.due}</span>
+            <span style="flex:1"></span>
+            <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">${esc(state.lang)}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="gmain">
+    <div class="card" style="padding:24px 28px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">${letter.title}</h3>
+        <button class="btn-outline no-print" data-print="1">${icon('print','font-size:18px')}Print</button>
+        <span class="badge" style="background:#E8F5E9;color:#1E4620">${esc(state.lang)} edition</span>
+      </div>
+      <div class="sheet" style="border:1px solid #E0E0E0;border-radius:4px;padding:28px 32px">
+        <div style="font:400 12px/2 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.6)">iLearn Schools · ESL &amp; Bilingual Department</div>
+        <div style="font:500 18px/1.4 Roboto,sans-serif;margin-bottom:4px">${letter.heading}</div>
+        <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-bottom:20px">${letter.deadline}</div>
+        <div class="gform">
+          ${letter.fields.map(fd => `<div><div style="font:500 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${fd}</div><div style="border-bottom:1px solid #BDBDBD;height:26px"></div></div>`).join('')}
+        </div>
+        <div class="hairline"></div>
+        <div style="display:flex;flex-direction:column;gap:11px;margin-bottom:20px">
+          ${letter.body.map(pg => `<div style="font:400 13.5px/1.75 Roboto,sans-serif;color:rgba(0,0,0,.87)">${pg}</div>`).join('')}
+        </div>
+        ${letter.checks.length ? `
+        <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:8px">${letter.checksLabel}</div>
+        <div class="g2" style="gap:9px 24px;margin-bottom:20px">
+          ${letter.checks.map(ck => `<div style="display:flex;align-items:flex-start;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0;margin-top:3px"></span><span style="font:400 13px/1.6 Roboto,sans-serif">${ck}</span></div>`).join('')}
+        </div>` : ''}
+        <div class="hairline" style="margin:0 0 22px"></div>
+        <div style="font:500 13px/1.6 Roboto,sans-serif;margin-bottom:10px">Required elements for placement notices — confirm each is present before sending</div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          ${NOTICE_ELEMENTS.map(n => `<div style="display:flex;gap:10px"><span style="width:14px;height:14px;border:1px solid rgba(0,0,0,.6);flex-shrink:0;margin-top:3px"></span><span style="font:400 13px/1.6 Roboto,sans-serif">${n}</span></div>`).join('')}
+        </div>
+        <div style="display:flex;gap:28px;margin-top:26px">
+          <div style="flex:1"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">ESL teacher signature</div></div>
+          <div style="width:180px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:30px"></div><div style="font:400 11.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Date sent</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card" style="padding:20px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 10px">If a Family Declines Services</h3>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          ${[
+            'A parent may refuse some or all services, request different available services, or refuse in writing or verbally — document the response either way.',
+            'ML designation remains until the student reaches 4.5+ and completes the exit process. Refusal of services does not exit a student.',
+            'Mid-year removal during the first three years of participation requires Executive County Superintendent approval; year-end removal does not.',
+            'A refused student still counts for Title III purposes, but not for state bilingual categorical aid (ASSA).',
+            'The annual continuation letter is still sent every year, including to families who declined.'
+          ].map(t => `<div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${t}</div>`).join('')}
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Notice Tracking</h3>
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr>
+            <th style="text-align:left;padding:10px 8px;font:500 12.5px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">Notice</th>
+            <th style="text-align:left;padding:10px 8px;font:500 12.5px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);width:76px">Sent</th>
+            <th style="text-align:left;padding:10px 8px;font:500 12.5px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);width:76px">On file</th>
+          </tr></thead>
+          <tbody>
+            ${TRACK_ROWS.map((t,i) => `
+              <tr>
+                <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,.12);font:400 13px/1.5 Roboto,sans-serif">${t}</td>
+                <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,.12);text-align:center"><input type="checkbox" class="chk" data-store-check="notice:${i}:sent" ${sget('notice:'+i+':sent',false)?'checked':''}></td>
+                <td style="padding:10px 8px;border-bottom:1px solid rgba(0,0,0,.12);text-align:center"><input type="checkbox" class="chk" data-store-check="notice:${i}:onfile" ${sget('notice:'+i+':onfile',false)?'checked':''}></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: WEEKLY PLC ============================= */
+function renderPlc(){
+  let w = 0;
+  return `
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Weekly PLC Cohorts</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Two cohorts meet weekly by Zoom. Attendance is mandatory with your designated cohort.</p>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:#FFF1DE;border-radius:4px;flex-wrap:wrap">
+      ${icon('schedule','font-size:20px;color:#E07A00')}
+      <div style="flex:1;min-width:240px;font:400 13px/1.6 Roboto,sans-serif;color:#663C00">Sessions run <strong>2:45 PM – 3:45 PM</strong>. All ESL staff must schedule their prep period for the <strong>last period of their designated PLC day</strong> in order to participate.</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    ${PLC_COHORTS.map(c => {
+      const zoom = sget('plc:'+c.key+':zoom','');
+      return `
+      <div class="card" style="padding:22px 24px">
+        <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">Weekly Cohort</div>
+        <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+          <span style="font:700 30px/1.1 MuseoModerno,sans-serif;letter-spacing:.02em">${c.day}</span>
+          <span style="font:500 13px/24px Roboto,sans-serif;color:#9747FF;background:rgba(151,71,255,.12);border-radius:9999px;padding:0 12px">2:45 – 3:45 PM</span>
+        </div>
+        <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:10px 0 0">${c.who}</p>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;padding:12px 14px;border:1px solid #E0E0E0;border-radius:4px">
+          ${icon('videocam','font-size:20px;color:#0288D1')}
+          <div style="flex:1;min-width:0">
+            <div style="font:500 13px/1.5 Roboto,sans-serif">Zoom Meeting</div>
+            ${zoom
+              ? `<a href="${esc(zoom)}" target="_blank" rel="noopener" style="font:400 12.5px/1.6 Roboto,sans-serif;color:#9747FF;text-decoration:none;word-break:break-all">${esc(zoom)}</a>`
+              : `<input class="entry entry-wide" style="max-width:260px" data-store="plc:${c.key}:zoom" placeholder="Paste Zoom link…" value="">`
+            }
+          </div>
+          ${zoom ? `<a href="${esc(zoom)}" target="_blank" rel="noopener" class="btn-solid">Join</a>` : ''}
+        </div>
+
+        <div style="font:500 14px/1.5 Roboto,sans-serif;margin:18px 0 8px">Staff Roster</div>
+        <div style="display:flex;gap:12px;padding:0 0 6px;border-bottom:1px solid #E0E0E0">
+          <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1.4">Staff Member</span>
+          <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1">Campus</span>
+          <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1">Role</span>
+          <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);width:64px;flex-shrink:0;text-align:center">Present</span>
+        </div>
+        <div style="display:flex;flex-direction:column">
+          ${Array.from({length:c.rosterRows}, (_,i) => `
+            <div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #F5F5F5">
+              <input class="underline-input" style="flex:1.4" data-store="plcroster:${c.key}:${i}:name" value="${esc(sget('plcroster:'+c.key+':'+i+':name',''))}">
+              <input class="underline-input" style="flex:1" data-store="plcroster:${c.key}:${i}:campus" value="${esc(sget('plcroster:'+c.key+':'+i+':campus',''))}">
+              <input class="underline-input" style="flex:1" data-store="plcroster:${c.key}:${i}:role" value="${esc(sget('plcroster:'+c.key+':'+i+':role',''))}">
+              <span style="width:64px;flex-shrink:0;display:flex;justify-content:center"><input type="checkbox" class="chk-round" data-store-check="plcroster:${c.key}:${i}:present" ${sget('plcroster:'+c.key+':'+i+':present',false)?'checked':''}></span>
+            </div>`).join('')}
+        </div>
+        <div style="font:400 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:10px">Campuses in this cohort: ${c.campusList}</div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Weekly Topic Rotation &amp; Sign-Up</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">One teacher leads each week — a 40-minute presentation or online workshop, followed by cohort debrief. Both cohorts run the same topic in the same week so the Tuesday and Wednesday groups stay in step. Claim a week by entering your name; topics may be swapped with the Department Head's approval.</p>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      ${PLC_QUARTERS.map(q => `
+        <div>
+          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+            <span style="font:500 14px/1.5 Roboto,sans-serif">${q.label}</span>
+            <span style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6">${q.span}</span>
+          </div>
+          <div style="display:flex;gap:12px;padding:0 0 6px;border-bottom:1px solid #E0E0E0">
+            <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);width:64px;flex-shrink:0">Week</span>
+            <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1">Topic</span>
+            <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);width:150px;flex-shrink:0">Presenter</span>
+            <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);width:96px;flex-shrink:0">Date</span>
+            <span style="font:500 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);width:78px;flex-shrink:0;text-align:center">Materials</span>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            ${q.topics.map(t => { w++; const wk = 'w'+w; return `
+              <div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid #F5F5F5">
+                <span style="width:64px;flex-shrink:0;font:500 12.5px/1.5 Roboto,sans-serif;color:#9747FF">Week ${w}</span>
+                <span style="flex:1;min-width:0;font:400 13px/1.6 Roboto,sans-serif">${t}</span>
+                <input class="underline-input" style="width:150px;flex-shrink:0" data-store="plctopic:${wk}:presenter" value="${esc(sget('plctopic:'+wk+':presenter',''))}">
+                <input class="underline-input" style="width:96px;flex-shrink:0" data-store="plctopic:${wk}:date" value="${esc(sget('plctopic:'+wk+':date',''))}">
+                <span style="width:78px;flex-shrink:0;display:flex;justify-content:center"><input type="checkbox" class="chk-round" data-store-check="plctopic:${wk}:materials" ${sget('plctopic:'+wk+':materials',false)?'checked':''}></span>
+              </div>`; }).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:16px;padding:14px 16px;background:#FFF1DE;border-radius:4px;font:400 13px/1.6 Roboto,sans-serif;color:#663C00">Presenters share slides or workshop materials with the department by the Monday before their session so both cohorts can preview them. Check <strong>Materials</strong> once submitted.</div>
+  </div>`;
+}
+
+/* ============================= SCREEN: PAC ============================= */
+function renderPac(){
+  return `
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start">
+    ${PAC_MEETINGS.map((p,i) => `
+      <div class="card" style="padding:20px">
+        <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">${p.tag}</div>
+        <div style="display:flex;align-items:baseline;gap:10px"><span style="font:700 30px/1 MuseoModerno,sans-serif;letter-spacing:.02em">${p.date}</span></div>
+        <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:12px 0 0">${p.body}</p>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <div style="flex:1"><div style="font:400 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-bottom:4px">Families attending</div><input class="entry entry-wide" style="height:32px" data-store="pac:${i}:families" value="${esc(sget('pac:'+i+':families',''))}" placeholder="—"></div>
+          <div style="flex:1"><div style="font:400 11.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-bottom:4px">Staff attending</div><input class="entry entry-wide" style="height:32px" data-store="pac:${i}:staff" value="${esc(sget('pac:'+i+':staff',''))}" placeholder="—"></div>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div>
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">What the PAC Does</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">A program mandate in the district Three-Year Plan. Attendance is not optional for ESL and bilingual staff.</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><div style="font:500 13.5px/1.5 Roboto,sans-serif">Advocacy</div><div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">A voice for ML families — opinions, concerns, and suggestions reach administrators directly.</div></div>
+        <div><div style="font:500 13.5px/1.5 Roboto,sans-serif">Parent Engagement</div><div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Events and workshops that bring ML families into the life of the school.</div></div>
+        <div><div style="font:500 13.5px/1.5 Roboto,sans-serif">Cultural Awareness</div><div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Celebrations that build understanding of the community's languages and cultures.</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: WIDA ============================= */
+function renderWida(){
+  return `
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Four Nested Components</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 16px">These are not English grammar standards. They describe how students use language to do things with content — broadest on the outside, most specific at the center.</p>
+    <div class="g4" style="gap:14px">
+      ${[
+        ['1','ELD Standards Statements','Five broad flags — one per subject area.'],
+        ['2','Key Language Uses','Four jobs language does: Narrate, Inform, Explain, Argue.'],
+        ['3','Language Expectations','Grade-band map points between a KLU and a content standard.'],
+        ['4','Proficiency Level Descriptors','Six stages of English development.']
+      ].map(([n,title,body]) => `<div style="background:#FAFAFA;border-radius:4px;padding:16px"><div style="font:700 24px/1 MuseoModerno,sans-serif;color:#E07A00">${n}</div><div style="font:500 14px/1.4 Roboto,sans-serif;margin-top:8px">${title}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">${body}</div></div>`).join('')}
+    </div>
+    <div style="margin-top:16px;padding:14px 16px;background:#FFF1DE;border-radius:4px;font:400 13px/1.6 Roboto,sans-serif;color:#663C00">The Can Do Philosophy: every multilingual learner brings assets, not deficits. Plan instruction around what a student can already do — every scaffold exists to help a student show what they know, not to gatekeep who participates.</div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Key Language Uses</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${KLUS.map(k => `<div style="display:flex;gap:16px;padding-bottom:12px;border-bottom:1px solid #F5F5F5"><div style="width:88px;flex-shrink:0;font:700 16px/1.3 MuseoModerno,sans-serif;color:#E07A00">${k.name}</div><div style="flex:1"><div style="font:400 13px/1.6 Roboto,sans-serif">${k.what}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:#9592A6;margin-top:4px">Frame: ${k.frame}</div></div></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">The Objective Formula</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Fuse language and content into one gradeable sentence. The word after "by" is your embedded assessment.</p>
+      <div style="background:#FAFAFA;border-radius:4px;padding:16px;font:400 14px/1.7 Roboto,sans-serif">Students will be able to <strong>[Key Language Use]</strong> by <strong>[Bloom's verb + task]</strong>, using <strong>[language support]</strong>.</div>
+      <div style="background:#FFF1DE;border-radius:4px;padding:16px;margin-top:10px;font:400 13.5px/1.7 Roboto,sans-serif;color:#663C00">Students will be able to <strong>Narrate</strong> by <strong>composing</strong> a three-sentence retelling of the water cycle, using time-order words (first, next, then, finally).</div>
+      <div class="hairline" style="margin:18px 0"></div>
+      <div style="font:500 14px/1.5 Roboto,sans-serif;margin-bottom:8px">Bloom's Verb Bank</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        ${BLOOMS.map(b => `<div style="display:flex;gap:14px"><span style="font:500 13px/1.6 Roboto,sans-serif;width:96px;flex-shrink:0">${b.level}</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1">${b.verbs}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Proficiency Level Descriptors</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 16px">Six stages of English development. Across levels the content goal never changes — only the language support does.</p>
+    <div class="g6" style="gap:12px">
+      ${PLDS.map(p => `<div style="border:1px solid #E0E0E0;border-radius:4px;padding:14px"><div style="display:flex;align-items:baseline;gap:8px"><span style="font:700 20px/1 MuseoModerno,sans-serif;color:#E07A00">${p.n}</span><span style="font:500 13.5px/1.4 Roboto,sans-serif">${p.name}</span></div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:8px">${p.desc}</div><div style="font:400 12.5px/1.6 Lato,Roboto,sans-serif;color:#333269;margin-top:10px;padding-top:10px;border-top:1px solid #F5F5F5">${p.sample}</div></div>`).join('')}
+    </div>
+    <div style="font:400 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:12px">Sample responses: Grades 6–8, explaining an ecosystem disturbance.</div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 16px">Grade-Band Quick Reference</h3>
+    <div class="g4" style="gap:14px">
+      ${BANDS.map(b => `<div style="border:1px solid #E0E0E0;border-radius:4px;padding:16px"><div style="display:flex;align-items:center;gap:10px"><span style="min-width:44px;height:28px;padding:0 8px;border-radius:4px;background:#FFF1DE;color:#E07A00;font:700 14px/28px MuseoModerno,sans-serif;text-align:center">${b.band}</span><span style="font:500 13.5px/1.4 Roboto,sans-serif">${b.name}</span></div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:10px">${b.focus}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:10px;padding-top:10px;border-top:1px solid #F5F5F5"><span style="color:#9592A6">Objective: </span>${b.objective}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:8px"><span style="color:#9592A6">Scaffold: </span>${b.scaffold}</div></div>`).join('')}
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Rules, Regulations &amp; Contacts</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 16px">Guidance current as of July 2026. Always confirm current forms, cut scores, and deadlines with the Department Head, as state guidance may be updated.</p>
+    <div class="g2" style="gap:24px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        ${REGS.map(r => `<div style="padding-bottom:12px;border-bottom:1px solid #F5F5F5"><div style="font:500 13.5px/1.5 Roboto,sans-serif">${r.cite}</div><div style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">${r.what}</div></div>`).join('')}
+      </div>
+      <div>
+        <div style="font:500 14px/1.5 Roboto,sans-serif;margin-bottom:10px">Key Contacts</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          ${CONTACTS.map(c => `<div style="display:flex;gap:14px;padding-bottom:9px;border-bottom:1px solid #F5F5F5"><span style="font:400 13px/1.6 Roboto,sans-serif;flex:1">${c.who}</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);text-align:right">${c.how}</span></div>`).join('')}
+        </div>
+        <div style="margin-top:14px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">Never include student personally identifying information in email to NJDOE.</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: CURRICULUM ============================= */
+function renderCurriculum(){
+  return `
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Curriculum Library</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">The department's board-approved ESL curriculum guides, one per grade band. Guides are revised annually; always teach from the version currently published in Chalk.</p>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:#E8F4FD;border-radius:4px;flex-wrap:wrap">
+      ${icon('cloud_done','font-size:20px;color:#0288D1')}
+      <div style="flex:1;min-width:220px;font:400 13px/1.6 Roboto,sans-serif;color:#014361">Curriculum of record lives in <strong>Chalk</strong>. Every document below opens in the district Chalk workspace — staff sign in with their iLearn account.</div>
+      <div style="display:flex;gap:10px;flex-shrink:0">
+        <a href="${CHALK_URL}" target="_blank" rel="noopener" class="btn-solid">Staff Curriculum</a>
+        <a href="${CHALK_PUBLIC_URL}" target="_blank" rel="noopener" style="font:500 13px/34px Roboto,sans-serif;letter-spacing:.02em;border:1px solid #9747FF;color:#9747FF;border-radius:4px;padding:0 18px;text-decoration:none">Public Site</a>
+      </div>
+    </div>
+  </div>
+
+  ${CURRICULUM_GROUPS.map(g => `
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">${g.label}</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">${g.note}</p>
+      <div style="display:flex;flex-direction:column">
+        ${g.docs.map(d => `
+          <a href="${CHALK_URL}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:11px 8px;margin:0 -8px;border-bottom:1px solid #F5F5F5;text-decoration:none;color:rgba(0,0,0,.87);border-radius:4px">
+            ${icon('description','font-size:20px;color:#9747FF;flex-shrink:0')}
+            <span style="font:400 13.5px/1.5 Roboto,sans-serif;flex:1;min-width:0">${d.name}</span>
+            <span style="font:400 12px/1.6 Roboto,sans-serif;color:#9592A6;width:118px;flex-shrink:0">${d.meta}</span>
+            <span style="display:flex;align-items:center;gap:4px;font:500 11px/20px Roboto,sans-serif;color:#9747FF;background:rgba(151,71,255,.12);border-radius:9999px;padding:0 10px;flex-shrink:0">${d.status}${icon('open_in_new','font-size:14px')}</span>
+          </a>`).join('')}
+      </div>
+    </div>`).join('')}
+  `;
+}
+
+/* ============================= MAIN RENDER ============================= */
+const SCREEN_RENDERERS = {
+  dash: renderDash, timeline: renderTimeline, ident: renderIdent, service: renderService,
+  exit: renderExit, fml: renderFml, notices: renderNotices, plc: renderPlc, pac: renderPac,
+  wida: renderWida, curriculum: renderCurriculum
+};
+
+function renderAll(){
+  document.getElementById('sidebar').innerHTML = renderSidebar();
+  document.getElementById('main').innerHTML = renderHeader() + (SCREEN_RENDERERS[state.screen] || renderDash)();
+}
+
+/* ============================= EVENTS ============================= */
+document.addEventListener('click', e => {
+  const navBtn = e.target.closest('[data-nav]');
+  if (navBtn) { state.screen = navBtn.dataset.nav; renderAll(); window.scrollTo(0,0); return; }
+
+  const roleBtn = e.target.closest('[data-role]');
+  if (roleBtn) { state.role = roleBtn.dataset.role; renderAll(); return; }
+
+  const letterCard = e.target.closest('[data-letter]');
+  if (letterCard) { state.letter = letterCard.dataset.letter; renderAll(); return; }
+
+  const printBtn = e.target.closest('[data-print]');
+  if (printBtn) { window.print(); return; }
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'campusSelect') { state.campus = e.target.value; renderAll(); return; }
+  if (e.target.id === 'langSelect') { state.lang = e.target.value; renderAll(); return; }
+
+  const statusSel = e.target.closest('[data-store-select]');
+  if (statusSel) {
+    const key = statusSel.dataset.storeSelect;
+    sset(key, statusSel.value);
+    const col = statusColors(statusSel.value);
+    statusSel.style.background = col.bg; statusSel.style.color = col.color;
+    return;
+  }
+
+  const chk = e.target.closest('[data-store-check]');
+  if (chk) { sset(chk.dataset.storeCheck, chk.checked); return; }
+});
+
+document.addEventListener('input', e => {
+  const field = e.target.closest('[data-store]');
+  if (field) {
+    sset(field.dataset.store, field.value);
+    // live-update Zoom link rendering without losing focus elsewhere isn't needed;
+    // full refresh happens next navigation.
+  }
+});
+
+renderAll();
+initFirebaseSync();
+</script>
+</body>
+</html>
