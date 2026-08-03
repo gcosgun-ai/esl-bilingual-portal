@@ -1482,11 +1482,29 @@ document.addEventListener('click', e => {
     if (sheet && area) {
       area.innerHTML = sheet.outerHTML;
       document.body.classList.add('print-scoped');
-      window.print();
+      // Double rAF: guarantees the browser has actually applied the print-scoped
+      // layout/style change before the print dialog opens (avoids a race where
+      // window.print() fires before the style recalculation is committed).
+      requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
     } else {
       window.print();
     }
     return;
+  }
+});
+
+// Safety net: if print is triggered any other way (Ctrl+P, browser/print-icon,
+// right-click > Print) instead of clicking our own Print button, the click handler
+// above never runs. Catch it here and scope to whichever printable form (.sheet)
+// is currently visible on screen, so the whole app never prints by accident.
+window.addEventListener('beforeprint', () => {
+  const area = document.getElementById('printArea');
+  if (!area) return;
+  if (document.body.classList.contains('print-scoped') && area.innerHTML.trim()) return; // already handled by the click above
+  const visibleSheet = document.querySelector('#main .sheet');
+  if (visibleSheet) {
+    area.innerHTML = visibleSheet.outerHTML;
+    document.body.classList.add('print-scoped');
   }
 });
 
