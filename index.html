@@ -173,7 +173,7 @@ const LOGO_SVG = `<svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" 
 
 const TITLES = {
   dash: 'Department Dashboard', timeline: 'Program Timeline', ident: 'Identification',
-  service: 'Service & Instruction', exit: 'Exit & Reclassification', fml: 'Former ML Monitoring',
+  service: 'Service & Instruction', docs: 'Lesson Plans & Journals', exit: 'Exit & Reclassification', fml: 'Former ML Monitoring',
   notices: 'Parent Notices & Family Rights', pac: 'Parent Advisory Committee',
   plc: 'Weekly PLC Cohorts', wida: 'WIDA ELD Standards & Regulations', curriculum: 'ESL Curriculum Files',
   nyenl: 'NY ENL Program & Regulations', nytimeline: 'NY ENL Timeline 2026–2027', nyresources: 'NY ENL Resources'
@@ -181,7 +181,7 @@ const TITLES = {
 
 const NAV_DEFS = [
   { label: 'Overview', items: [['dash','dashboard','Department Dashboard'], ['timeline','event_note','Program Timeline']] },
-  { label: 'Student Pathway', items: [['ident','assignment','Identification'], ['service','menu_book','Service & Instruction'], ['exit','logout','Exit & Reclassification'], ['fml','visibility','Former ML Monitoring']] },
+  { label: 'Student Pathway', items: [['ident','assignment','Identification'], ['service','menu_book','Service & Instruction'], ['docs','fact_check','Lesson Plans & Journals'], ['exit','logout','Exit & Reclassification'], ['fml','visibility','Former ML Monitoring']] },
   { label: 'Families & Staff', items: [['notices','mail','Parent Notices'], ['plc','cast_for_education','Weekly PLC'], ['pac','groups','Parent Advisory Cmte.']] },
   { label: 'New York — Bronx', ny: true, items: [['nyenl','account_balance','ENL Program & Regs'], ['nytimeline','date_range','NY Timeline 2026–27'], ['nyresources','collections_bookmark','NY Resources']] },
   { label: 'Reference', items: [['wida','school','WIDA ELD Standards'], ['curriculum','folder_open','ESL Curriculum Files']] }
@@ -468,6 +468,102 @@ const CONTACTS = [
   { who: 'WIDA Help Desk', how: 'help@wida.us · (866) 276-7735' },
   { who: 'WIDA AMS / test materials', how: 'wida@datarecognitioncorp.com · (855) 787-9615' },
   { who: 'Full NJDOE guidance', how: 'nj.gov/education/title3' }
+];
+
+/* ===================== LESSON PLANS & JOURNALS ===================== */
+
+const DRIVE = {
+  parent:  'https://drive.google.com/drive/folders/1uk7x9vm6vbh8tOXWcHM56QKZLcq_6Mnt',
+  lesson:  'https://drive.google.com/drive/folders/1obpbIDG264CqymCMcm5b6ibwqBDZ1E5v',
+  teacher: 'https://drive.google.com/drive/folders/16iQExaqFbYXIdemlrCwALCmWuM8CQo2D',
+  aide:    'https://drive.google.com/drive/folders/1EEyjOTeEOnxqO2HLgE6bINxsMoQqSsAC'
+};
+
+const DOC_TEMPLATES = [
+  { id: 'lesson', num: '1', icon: 'description',
+    name: 'ESL Pull-Out Lesson Plan',
+    who: 'ESL teachers',
+    what: 'A weekly, day-by-day plan (Monday&ndash;Friday) aligned to WIDA ELD and NY Next Generation standards: objectives, academic vocabulary, warm-up, I Do / We Do / You Do, closure, differentiation, materials, and post-lesson reflection.',
+    cadence: 'Weekly · one plan per week',
+    file: 'templates/ESL_PullOut_Lesson_Plan_Template.xlsx',
+    sheet: 'sheet-lessonplan', orient: 'landscape', drive: DRIVE.lesson,
+    folder: '1. ESL Pull out Lesson Plans' },
+  { id: 'teacher', num: '2', icon: 'edit_note',
+    name: 'ESL & Bilingual Teacher Push-In Journal',
+    who: 'ESL teachers and bilingual teachers',
+    what: 'One row per class period you push into: subject, lesson objective, scheduled vs. actual arrival time, your role that period, scaffolds used, and a two-sentence account of what you did and what happened.',
+    cadence: 'Daily entries · submitted weekly',
+    file: 'templates/ESL_Bilingual_Teacher_PushIn_Journal_Template.xlsx',
+    sheet: 'sheet-teacherjournal', orient: 'landscape', drive: DRIVE.teacher,
+    folder: '2. ESL & Bilingual Teacher Push-In Journals' },
+  { id: 'aide', num: '3', icon: 'edit_note',
+    name: 'Bilingual Aide Push-In Journal',
+    who: 'Bilingual aides',
+    what: 'One row per class period: the teacher supported, lesson objective, arrival time, role that period, support type provided, scaffolds used, and the same two-sentence account.',
+    cadence: 'Daily entries · submitted weekly',
+    file: 'templates/Bilingual_Aide_PushIn_Journal_Template.xlsx',
+    sheet: 'sheet-aidejournal', orient: 'landscape', drive: DRIVE.aide,
+    folder: '3. Bilingual Aide Push-In Journals' }
+];
+
+/* Row labels shared by both journals — 5 days x 5 periods, matching the templates. */
+const JOURNAL_DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const JOURNAL_PERIODS = ['Period 1','Period 2','Period 3','Period 4','Period 5'];
+
+const TEACHER_JOURNAL_COLS = [
+  { h: 'Day', w: '68px' }, { h: 'Period', w: '62px' }, { h: 'Subject', w: '92px' },
+  { h: 'Lesson Objective / Focus', w: '' }, { h: 'Sched.<br>Time', w: '58px' },
+  { h: 'Arrival<br>Time', w: '58px' }, { h: 'On<br>Time?', w: '46px' },
+  { h: 'If Late,<br>Reason', w: '78px' }, { h: 'Role This Period', w: '112px' },
+  { h: 'Scaffold(s) Used', w: '100px' },
+  { h: 'In Two Sentences — What I Did, With Whom, and What Happened', w: '' }
+];
+
+const AIDE_JOURNAL_COLS = [
+  { h: 'Day', w: '68px' }, { h: 'Period', w: '62px' }, { h: 'Subject', w: '84px' },
+  { h: 'Teacher<br>Supported', w: '86px' }, { h: 'Lesson Objective / Focus', w: '' },
+  { h: 'Sched.<br>Time', w: '54px' }, { h: 'Arrival<br>Time', w: '54px' },
+  { h: 'On<br>Time?', w: '44px' }, { h: 'If Late,<br>Reason', w: '72px' },
+  { h: 'Role This Period', w: '104px' }, { h: 'Support<br>Provided', w: '96px' },
+  { h: 'Scaffold(s) Used', w: '96px' },
+  { h: 'In Two Sentences — What I Did, With Whom, and What Happened', w: '' }
+];
+
+const LESSON_PLAN_ROWS = [
+  { label: 'WIDA ELD / NY Next Generation Standards', head: false },
+  { label: '1. Focus & Objective', head: true },
+  { label: 'a. Curriculum Connection', head: false, ind: true },
+  { label: 'b. Objective & Assessment', head: false, ind: true },
+  { label: 'c. Academic Vocabulary / Key Terms', head: false, ind: true },
+  { label: '2. Lesson Activities & Timing', head: true },
+  { label: 'a. Warm-Up / Do Now (5 min)', head: false, ind: true },
+  { label: 'b. I Do (Teacher Models)', head: false, ind: true },
+  { label: 'c. We Do (Guided Practice)', head: false, ind: true },
+  { label: 'd. You Do (Independent Practice)', head: false, ind: true },
+  { label: '3. Closure / Exit Ticket (5–10 min)', head: true },
+  { label: '4. Differentiation & Scaffolds', head: true },
+  { label: '5. Materials & Resources', head: true },
+  { label: '6. Post-Lesson Reflection', head: true }
+];
+
+/* Dropdown vocabularies from the templates' Lists tab — printed so paper users pick
+   the same wording as the spreadsheet, keeping entries comparable department-wide. */
+const DOC_VOCAB = [
+  { t: 'Role this period — teacher', items: ['Co-Taught / Actively Assisted','Led Whole-Group Mini-Lesson','Small Group Pull-Aside in Room','One-on-One Support','Monitored & Redirected Behavior','Circulated & Checked for Understanding','Observed Only','Did Not Attend'] },
+  { t: 'Role this period — aide', items: ['Actively Supported Students','Assisted Teacher with Materials/Logistics','Provided One-on-One Support','Provided Translation/Interpretation During Lesson','Monitored & Redirected Behavior','Circulated & Checked in with Multiple Students','Observed Only','Did Not Attend'] },
+  { t: 'Support provided (aide)', items: ['Small Group Instruction','One-on-One Support','Translation / Interpretation','Material / Text Adaptation','Behavior & Classroom Support','Assessment Support','Other'] },
+  { t: 'Scaffolds used for MLs', items: ['Sentence Frames / Starters','Visuals / Realia','Graphic Organizers','Native-Language Support / Translation','Pre-Taught Vocabulary','Peer / Partner Support','Chunked / Simplified Text','Other'] },
+  { t: 'Group size (lesson plan)', items: ['Whole Class','Small Group (2-3)','Small Group (4-6)','Pairs','One-on-One','Station Rotation','Other'] },
+  { t: 'Curriculum resource', items: ['Connect (K-5)','English 3D (6-12)','Other'] }
+];
+
+const WIDA_QUICKREF = [
+  { n: '1', name: 'Entering', d: 'Relies on visuals, gestures, and single words or phrases; may respond in the home language.' },
+  { n: '2', name: 'Emerging', d: 'Uses short phrases and memorized chunks; needs heavy visual and graphic support.' },
+  { n: '3', name: 'Developing', d: 'Uses general and some specific academic language; benefits from sentence frames and modeling.' },
+  { n: '4', name: 'Expanding', d: 'More complex language with occasional errors; can produce short paragraphs with support.' },
+  { n: '5', name: 'Bridging', d: 'Close to grade-level peers with light support; most abstract content is accessible.' },
+  { n: '6', name: 'Reaching', d: 'Specialized and technical language comparable to peers; little to no support needed.' }
 ];
 
 /* ===================== NEW YORK / BRONX — ENL (CR Part 154) ===================== */
@@ -1128,15 +1224,19 @@ function renderService(){
         </div>
       </div>
       <div class="card" style="padding:20px">
-        <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Required Documentation</h3>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Required Documentation</h3>
+          <button data-nav="docs" style="border:0;background:none;font:500 12px/1 Roboto,sans-serif;color:#E07A00;cursor:pointer;text-decoration:underline;padding:0">Templates &amp; forms</button>
+        </div>
         <div style="display:flex;flex-direction:column;gap:10px">
           ${[
-            ['description','ESL Pull-Out Lesson Plan','Weekly, due Friday for the following week'],
+            ['description','ESL Pull-Out Lesson Plan','Weekly, submitted Friday'],
             ['edit_note','ESL &amp; Bilingual Teacher Push-In Journal','One row per push-in period, daily'],
             ['edit_note','Bilingual Aide Push-In Journal','One row per period, completed by the aide']
           ].map(([ic,title,meta]) => `
-            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FAFAFA;border-radius:4px">${icon(ic,'font-size:22px;color:#E07A00')}<div style="flex:1"><div style="font:500 13.5px/1.4 Roboto,sans-serif">${title}</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">${meta}</div></div>${icon('open_in_new','font-size:20px;color:rgba(0,0,0,.38)')}</div>`).join('')}
+            <button data-nav="docs" style="display:flex;align-items:center;gap:12px;padding:12px;background:#FAFAFA;border:0;border-radius:4px;width:100%;text-align:left;cursor:pointer">${icon(ic,'font-size:22px;color:#E07A00')}<div style="flex:1"><div style="font:500 13.5px/1.4 Roboto,sans-serif">${title}</div><div style="font:400 12px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">${meta}</div></div>${icon('chevron_right','font-size:20px;color:rgba(0,0,0,.38)')}</button>`).join('')}
         </div>
+        <div style="margin-top:10px;font:400 12px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">All three are submitted weekly into Google Drive by end of day Friday.</div>
         <div style="margin-top:12px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Journal entries use the two-sentence frame: what you did, with whom, on what topic — then what happened, with evidence.</div>
       </div>
     </div>
@@ -1647,6 +1747,181 @@ function renderCurriculum(){
   `;
 }
 
+/* ============================= SCREEN: LESSON PLANS & JOURNALS ============================= */
+function fieldLine(label, w){
+  return `<div style="${w?'width:'+w+';flex-shrink:0':'flex:1'}"><div style="font:500 10.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">${label}</div><div style="border-bottom:1px solid #BDBDBD;height:20px"></div></div>`;
+}
+
+function journalPrintSheet(id, title, cols, extraHeader){
+  const rows = [];
+  JOURNAL_DAYS.forEach((day, di) => {
+    JOURNAL_PERIODS.forEach((p, pi) => {
+      const firstOfDay = pi === 0;
+      rows.push(`<tr>
+        <td style="padding:0 4px;height:30px;border:1px solid #D5D5D5;font:${firstOfDay?'500':'400'} 9.5px/1.3 Roboto,sans-serif;color:${firstOfDay?'rgba(0,0,0,.87)':'rgba(0,0,0,.38)'};${di%2?'background:#FAFAFA':''}">${firstOfDay?day:''}</td>
+        <td style="padding:0 4px;border:1px solid #D5D5D5;font:400 9.5px/1.3 Roboto,sans-serif;color:rgba(0,0,0,.6);${di%2?'background:#FAFAFA':''}">${p}</td>
+        ${cols.slice(2).map(() => `<td style="border:1px solid #D5D5D5;${di%2?'background:#FAFAFA':''}"></td>`).join('')}
+      </tr>`);
+    });
+  });
+  return `
+  <div class="sheet" id="${id}" style="border:1px solid #E0E0E0;border-radius:4px;padding:20px 22px">
+    <div style="font:400 11px/1.8 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.6)">iLearn Schools · ESL &amp; Bilingual Department</div>
+    <div style="font:500 17px/1.4 Roboto,sans-serif;margin-bottom:12px">${title}</div>
+    <div style="display:flex;gap:18px;margin-bottom:14px">${extraHeader}</div>
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+      <thead><tr>
+        ${cols.map(c => `<th style="padding:5px 4px;${c.w?'width:'+c.w+';':''}text-align:left;vertical-align:bottom;font:500 9.5px/1.25 Roboto,sans-serif;background:#F0F0F0;border:1px solid #D5D5D5">${c.h}</th>`).join('')}
+      </tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table>
+    <div style="display:flex;gap:24px;margin-top:18px">
+      <div style="flex:1"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Signature</div></div>
+      <div style="width:150px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Date submitted</div></div>
+      <div style="width:190px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Reviewed by (Dept. Head / ADA)</div></div>
+    </div>
+  </div>`;
+}
+
+function renderDocs(){
+  return `
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Weekly Submission — Google Drive</h3>
+      <span class="badge" style="background:#FDECEA;color:#5F2120">Due end of day Friday</span>
+    </div>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Save your completed copy straight into the Drive subfolder for your role. <strong>Do not email files or send them as attachments.</strong></p>
+
+    <div class="g4" style="gap:12px">
+      <div style="background:#FAFAFA;border-radius:4px;padding:14px"><div style="font:700 13px/1.3 MuseoModerno,sans-serif;color:#E07A00">Step 1</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:5px">Open the master template and choose <strong>File &gt; Make a copy</strong> into your own folder. Never edit the master.</div></div>
+      <div style="background:#FAFAFA;border-radius:4px;padding:14px"><div style="font:700 13px/1.3 MuseoModerno,sans-serif;color:#E07A00">Step 2</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:5px">Use the dropdowns for campus, grade, subject, role, and scaffolds rather than typing, so entries stay consistent.</div></div>
+      <div style="background:#FAFAFA;border-radius:4px;padding:14px"><div style="font:700 13px/1.3 MuseoModerno,sans-serif;color:#E07A00">Step 3</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:5px">For a new week, right-click the data tab, choose <strong>Duplicate</strong>, and rename it &ldquo;Week of [date]&rdquo;. Keep the original tab.</div></div>
+      <div style="background:#FAFAFA;border-radius:4px;padding:14px"><div style="font:700 13px/1.3 MuseoModerno,sans-serif;color:#E07A00">Step 4</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;margin-top:5px">Save the copy into your role&rsquo;s subfolder below, named to the convention.</div></div>
+    </div>
+
+    <div style="margin-top:14px;padding:14px 16px;background:#E8F4FD;border-radius:4px">
+      <div style="font:500 12.5px/1.5 Roboto,sans-serif;color:#014361;margin-bottom:4px">File naming convention</div>
+      <div style="font:400 13px/1.7 Roboto,sans-serif;color:#014361">[Last Name]_[Template Type]_[Week of Date]</div>
+      <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:#014361;margin-top:4px">For example <strong>Cosgun_LessonPlan_WeekOf-09.08.26</strong> or <strong>Rivera_AideJournal_WeekOf-09.08.26</strong>.</div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <a href="${DRIVE.parent}" target="_blank" rel="noopener" class="btn-solid">Open Weekly Submissions folder</a>
+      <a href="${DRIVE.lesson}" target="_blank" rel="noopener" style="font:500 13px/34px Roboto,sans-serif;border:1px solid #9747FF;color:#9747FF;border-radius:4px;padding:0 14px;text-decoration:none">1 · Lesson Plans</a>
+      <a href="${DRIVE.teacher}" target="_blank" rel="noopener" style="font:500 13px/34px Roboto,sans-serif;border:1px solid #9747FF;color:#9747FF;border-radius:4px;padding:0 14px;text-decoration:none">2 · Teacher Journals</a>
+      <a href="${DRIVE.aide}" target="_blank" rel="noopener" style="font:500 13px/34px Roboto,sans-serif;border:1px solid #9747FF;color:#9747FF;border-radius:4px;padding:0 14px;text-decoration:none">3 · Aide Journals</a>
+    </div>
+  </div>
+
+  <div class="g3">
+    ${DOC_TEMPLATES.map(t => `
+      <div class="card" style="padding:20px;border-top:3px solid #FF9215;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="width:26px;height:26px;border-radius:50%;background:#FF9215;color:#fff;font:700 13px/26px MuseoModerno,sans-serif;text-align:center;flex-shrink:0">${t.num}</span>
+          ${icon(t.icon,'font-size:20px;color:#E07A00')}
+        </div>
+        <div style="font:500 14.5px/1.4 Roboto,sans-serif">${t.name}</div>
+        <div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:3px">${t.who}</div>
+        <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:8px;flex:1">${t.what}</div>
+        <span class="badge" style="background:#FFF1DE;color:#E07A00;margin-top:10px;align-self:flex-start">${t.cadence}</span>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+          <a href="${t.file}" download style="display:inline-flex;align-items:center;justify-content:center;gap:8px;height:34px;font:500 12.5px/1 Roboto,sans-serif;border:1px solid #2E7D32;border-radius:4px;color:#2E7D32;text-decoration:none">${icon('download','font-size:16px')}Download .xlsx</a>
+          <button class="btn-outline no-print" style="justify-content:center;height:34px;font-size:12.5px" data-print="${t.sheet}" data-print-orient="${t.orient}">${icon('print','font-size:16px')}Print blank form</button>
+          <a href="${t.drive}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;font:400 12px/1 Roboto,sans-serif;color:#9747FF;text-decoration:none">${icon('folder_open','font-size:15px')}${t.folder}</a>
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">The Two-Sentence Frame</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Both journals use the same frame. Two real sentences with a name and an outcome — not a general summary.</p>
+      <div style="background:#FAFAFA;border-radius:4px;padding:16px;font:400 13.5px/1.75 Roboto,sans-serif">
+        <div><strong>Sentence 1:</strong> [what you did] with [student initials or group] on [topic].</div>
+        <div style="margin-top:4px"><strong>Sentence 2:</strong> [what happened / the evidence].</div>
+      </div>
+      <div style="background:#FFF1DE;border-radius:4px;padding:16px;margin-top:10px;font:400 13px/1.7 Roboto,sans-serif;color:#663C00">
+        &ldquo;I modeled sentence frames with M.R. and J.T. while they compared two characters&rsquo; motivations. Both used the frame independently on the exit ticket, correctly identifying one similarity and one difference.&rdquo;
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Use student <strong>initials</strong>, never full names, in journal narratives.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">WIDA Level Quick Reference</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">What comprehensible input and output typically look like at each level — use it to target the Differentiation &amp; Scaffolds row.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${WIDA_QUICKREF.map(w => `<div style="display:flex;gap:12px;padding-bottom:8px;border-bottom:1px solid #F5F5F5"><span style="font:700 15px/1.3 MuseoModerno,sans-serif;color:#E07A00;width:18px;flex-shrink:0">${w.n}</span><div style="flex:1"><span style="font:500 12.5px/1.5 Roboto,sans-serif">${w.name}</span> <span style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">— ${w.d}</span></div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Dropdown Wording</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">The exact options used in the spreadsheets. If you complete a form on paper, use this wording so entries stay comparable across the department.</p>
+    <div class="g3" style="gap:16px 24px">
+      ${DOC_VOCAB.map(v => `
+        <div>
+          <div style="font:500 12.5px/1.5 Roboto,sans-serif;margin-bottom:6px">${v.t}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px">
+            ${v.items.map(i => `<span style="display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:9999px;font:400 11.5px/1 Roboto,sans-serif;background:#F5F5F5;color:rgba(0,0,0,.7)">${i}</span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">In both journals, <strong>On Time? = No</strong> and a role of <strong>Observed Only</strong> or <strong>Did Not Attend</strong> auto-highlight red in the spreadsheet. That is intentional — it makes a week easy to scan.</div>
+  </div>
+
+  <div class="card" style="padding:24px 28px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Printable Blank Forms</h3>
+      <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Print landscape. Complete by hand, then enter into the spreadsheet before submitting.</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+      ${DOC_TEMPLATES.map(t => `<button class="btn-outline no-print" data-print="${t.sheet}" data-print-orient="${t.orient}">${icon('print','font-size:18px')}${t.name}</button>`).join('')}
+    </div>
+
+    ${journalPrintSheet('sheet-teacherjournal','ESL &amp; Bilingual Teacher Push-In Journal', TEACHER_JOURNAL_COLS,
+      fieldLine('Teacher Name:','') + fieldLine('School / Campus:','') + fieldLine('Grade Level(s):','120px') + fieldLine('Week Of:','110px'))}
+
+    <div style="height:20px"></div>
+
+    ${journalPrintSheet('sheet-aidejournal','Bilingual Aide Push-In Journal', AIDE_JOURNAL_COLS,
+      fieldLine('Aide Name:','') + fieldLine('School / Campus:','') + fieldLine('Grade Level(s):','120px') + fieldLine('Week Of:','110px'))}
+
+    <div style="height:20px"></div>
+
+    <div class="sheet" id="sheet-lessonplan" style="border:1px solid #E0E0E0;border-radius:4px;padding:20px 22px">
+      <div style="font:400 11px/1.8 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:rgba(0,0,0,.6)">iLearn Schools · ESL &amp; Bilingual Department</div>
+      <div style="font:500 17px/1.4 Roboto,sans-serif;margin-bottom:12px">ESL Pull-Out Lesson Plan</div>
+      <div style="display:flex;gap:18px;margin-bottom:10px">
+        ${fieldLine('Teacher Name:','')}${fieldLine('School / Campus:','')}${fieldLine('Week Of:','110px')}
+      </div>
+      <div style="display:flex;gap:18px;margin-bottom:10px">
+        ${fieldLine('Grade Level:','110px')}${fieldLine('Group Size:','120px')}${fieldLine('Curriculum Resource:','')}${fieldLine('WIDA Proficiency Level(s):','')}
+      </div>
+      <div style="display:flex;gap:18px;margin-bottom:14px">
+        ${fieldLine('Unit / Module This Week:','')}
+      </div>
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+        <thead><tr>
+          <th style="width:168px;padding:6px;text-align:left;font:500 10px/1.3 Roboto,sans-serif;background:#F0F0F0;border:1px solid #D5D5D5">Lesson Component</th>
+          ${['Monday','Tuesday','Wednesday','Thursday','Friday'].map(d => `<th style="padding:6px;text-align:left;font:500 10px/1.3 Roboto,sans-serif;background:#F0F0F0;border:1px solid #D5D5D5">${d}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${LESSON_PLAN_ROWS.map(r => `<tr>
+            <td style="padding:4px 6px;height:${r.head?26:34}px;border:1px solid #D5D5D5;font:${r.head?'500':'400'} ${r.head?'10':'9.5'}px/1.3 Roboto,sans-serif;${r.head?'background:#E8F4FD;':''}${r.ind?'padding-left:16px;color:rgba(0,0,0,.7)':''}">${r.label}</td>
+            ${[1,2,3,4,5].map(() => `<td style="border:1px solid #D5D5D5;${r.head?'background:#F7FBFE':''}"></td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="display:flex;gap:24px;margin-top:18px">
+        <div style="flex:1"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">ESL teacher signature</div></div>
+        <div style="width:150px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Date submitted</div></div>
+        <div style="width:190px"><div style="border-bottom:1px solid rgba(0,0,0,.6);height:26px"></div><div style="font:400 10.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">Reviewed by (Dept. Head / ADA)</div></div>
+      </div>
+    </div>
+  </div>`;
+}
+
 /* ============================= NY: BANNER SHARED BY NY SCREENS ============================= */
 function nyBanner(){
   return `
@@ -1985,6 +2260,7 @@ function renderNyResources(){
 /* ============================= MAIN RENDER ============================= */
 const SCREEN_RENDERERS = {
   dash: renderDash, timeline: renderTimeline, ident: renderIdent, service: renderService,
+  docs: renderDocs,
   exit: renderExit, fml: renderFml, notices: renderNotices, plc: renderPlc, pac: renderPac,
   wida: renderWida, curriculum: renderCurriculum,
   nyenl: renderNyEnl, nytimeline: renderNyTimeline, nyresources: renderNyResources
@@ -2016,6 +2292,9 @@ document.addEventListener('click', e => {
     const area = document.getElementById('printArea');
     if (sheet && area) {
       area.innerHTML = sheet.outerHTML;
+      // Wide forms (the journals and the weekly lesson-plan grid) only fit landscape.
+      // @page can't be toggled by class, so inject the rule and remove it afterward.
+      setPrintOrientation(printBtn.dataset.printOrient === 'landscape' ? 'landscape' : 'portrait');
       document.body.classList.add('print-scoped');
       // Double rAF: guarantees the browser has actually applied the print-scoped
       // layout/style change before the print dialog opens (avoids a race where
@@ -2027,6 +2306,21 @@ document.addEventListener('click', e => {
     return;
   }
 });
+
+/* Inject/remove an @page orientation rule for the current print job. */
+function setPrintOrientation(orient){
+  let el = document.getElementById('printOrientStyle');
+  if (!el) {
+    el = document.createElement('style');
+    el.id = 'printOrientStyle';
+    document.head.appendChild(el);
+  }
+  el.textContent = '@page { size: ' + (orient === 'landscape' ? 'landscape' : 'portrait') + '; margin: 0.4in; }';
+}
+function clearPrintOrientation(){
+  const el = document.getElementById('printOrientStyle');
+  if (el) el.remove();
+}
 
 // Safety net: if print is triggered any other way (Ctrl+P, browser/print-icon,
 // right-click > Print) instead of clicking our own Print button, the click handler
@@ -2045,6 +2339,7 @@ window.addEventListener('beforeprint', () => {
 
 window.addEventListener('afterprint', () => {
   document.body.classList.remove('print-scoped');
+  clearPrintOrientation();
   const area = document.getElementById('printArea');
   if (area) area.innerHTML = '';
 });

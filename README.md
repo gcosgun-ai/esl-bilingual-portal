@@ -41,6 +41,10 @@ This is a single static `index.html` file — no build step. Edit it and push to
 Exit & Reclassification, Former ML Monitoring, Parent Notices, Weekly PLC, PAC, WIDA ELD
 Standards, Curriculum Files.
 
+**Lesson Plans & Journals:** the three department templates (ESL Pull-Out Lesson Plan,
+Teacher Push-In Journal, Aide Push-In Journal) as downloadable `.xlsx` files in `templates/`,
+plus printable blank forms and the weekly Google Drive submission process.
+
 **New York — Bronx:** ENL Program & Regulations (CR Part 154), NY Timeline 2026–27, and
 NY Resources. Shown in purple throughout so NJ and NY requirements are never confused.
 
