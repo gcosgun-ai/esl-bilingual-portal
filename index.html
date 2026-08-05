@@ -483,7 +483,8 @@ const DOC_TEMPLATES = [
   { id: 'lesson', num: '1', icon: 'description',
     name: 'ESL Pull-Out Lesson Plan',
     who: 'ESL teachers',
-    what: 'A weekly, day-by-day plan (Monday&ndash;Friday) aligned to WIDA ELD and NY Next Generation standards: objectives, academic vocabulary, warm-up, I Do / We Do / You Do, closure, differentiation, materials, and post-lesson reflection.',
+    scope: 'Pull-out (stand-alone) instruction only',
+    what: 'A weekly, day-by-day plan (Monday&ndash;Friday) for stand-alone ESL taught outside the general education classroom: objectives, academic vocabulary, warm-up, I Do / We Do / You Do, closure, differentiation, materials, and post-lesson reflection. <strong>Do not use this for push-in</strong> — integrated support is documented in the journals below.',
     cadence: 'Weekly · one plan per week',
     file: 'templates/ESL_PullOut_Lesson_Plan_Template.xlsx',
     sheet: 'sheet-lessonplan', orient: 'landscape', drive: DRIVE.lesson,
@@ -1822,6 +1823,7 @@ function renderDocs(){
         </div>
         <div style="font:500 14.5px/1.4 Roboto,sans-serif">${t.name}</div>
         <div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:3px">${t.who}</div>
+        ${t.scope ? `<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 8px;border-radius:4px;background:#E8F4FD;font:500 11.5px/1.4 Roboto,sans-serif;color:#014361;align-self:flex-start">${icon('info','font-size:13px')}${t.scope}</div>` : ''}
         <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:8px;flex:1">${t.what}</div>
         <span class="badge" style="background:#FFF1DE;color:#E07A00;margin-top:10px;align-self:flex-start">${t.cadence}</span>
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
@@ -1868,6 +1870,7 @@ function renderDocs(){
         </div>`).join('')}
     </div>
     <div style="margin-top:14px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">In both journals, <strong>On Time? = No</strong> and a role of <strong>Observed Only</strong> or <strong>Did Not Attend</strong> auto-highlight red in the spreadsheet. That is intentional — it makes a week easy to scan.</div>
+    <div style="margin-top:10px;padding:12px 14px;background:#E8F5E9;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#1E4620">Campus dropdowns cover all <strong>22 campuses</strong>, including <strong>Bronx ASCS &ndash; Middle (6&ndash;8)</strong>. If your copy still lists 21, you are working from an older file — download a fresh template above.</div>
   </div>
 
   <div class="card" style="padding:24px 28px">
