@@ -58,7 +58,10 @@ button,select,input{font-family:inherit}
 
 .entry{min-width:52px;height:30px;border:1px solid #BDBDBD;border-radius:4px;padding:0 8px;font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.87);background:#fff;text-align:center}
 .entry:focus{outline:2px solid #FF9215;outline-offset:1px;border-color:#FF9215}
-.entry:disabled,.status-select:disabled{background:#F0F0F0!important;color:rgba(0,0,0,.38)!important;cursor:not-allowed}
+/* View-only styling: locked fields read as plain values, not broken inputs. */
+.entry:disabled,.status-select:disabled{background:#F7F7F7!important;color:rgba(0,0,0,.55)!important;cursor:default;border-color:#E4E4E4}
+.underline-input:disabled{background:transparent;color:rgba(0,0,0,.55);cursor:default;border-bottom-color:#E4E4E4}
+input[type=checkbox]:disabled{cursor:default;opacity:.55}
 .entry-wide{width:100%;text-align:left}
 .status-select{display:inline-flex;align-items:center;height:24px;padding:0 10px 0 8px;border-radius:9999px;font:500 12px/1 Roboto,sans-serif;border:0;cursor:pointer}
 .chk{width:15px;height:15px;border-radius:2px;flex-shrink:0;cursor:pointer;accent-color:#FF9215}
@@ -107,13 +110,29 @@ const ALLOWED_EDITOR_EMAIL = 'gcosgun@ilearnschools.org';
 let currentUser = null;      // Firebase auth user object, or null
 let isAuthorizedEditor = false;
 
-// Keys the app treats as "ML numbers" — locked to ALLOWED_EDITOR_EMAIL. Kept as one
-// helper so the client-side lock and the Firebase security rules describe the same set.
-function isLockedKey(key){
-  if (key.indexOf('dashMetric:') === 0) return true;
-  if (key.indexOf('camp:') === 0 && (key.endsWith(':ml') || key.endsWith(':screened') || key.endsWith(':fml') || key.endsWith(':status'))) return true;
-  return false;
+// Every stored field is editable only by ALLOWED_EDITOR_EMAIL. Everyone else gets a
+// full read-only view (they can still navigate, switch role/campus, print, and follow
+// links). Kept as a helper so the client-side lock and the Firebase security rules
+// describe the same set — currently "all of it".
+function isLockedKey(key){ return true; }
+
+/* Single source of truth for the read-only lock. Runs after every render, so any
+   data-entry field — present or future — is disabled unless the Department Head is
+   signed in. Belt-and-braces with the Firebase rules, which enforce the same thing
+   server-side (the client-side disable is just UX; the rules are the real security). */
+function applyLockState(){
+  const locked = !isAuthorizedEditor;
+  const title = locked ? 'View only — only the Department Head can edit this' : '';
+  document.querySelectorAll('[data-store],[data-store-check],[data-store-select]').forEach(el => {
+    const key = el.dataset.store || el.dataset.storeCheck || el.dataset.storeSelect;
+    const shouldLock = locked && isLockedKey(key);
+    el.disabled = shouldLock;
+    if (shouldLock) el.setAttribute('title', title); else el.removeAttribute('title');
+  });
 }
+
+/* Copy helper: hints that invite data entry should not be shown to view-only users. */
+function editHint(text){ return isAuthorizedEditor ? text : 'View only'; }
 
 function initAuth(){
   if (typeof firebase === 'undefined' || !firebase.auth) { console.warn('[auth] Firebase Auth did not load.'); return; }
@@ -464,9 +483,14 @@ try { STORE = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { ST
 function saveStore(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); }catch(e){} }
 function sget(key, def){ return (STORE[key] === undefined || STORE[key] === null) ? def : STORE[key]; }
 function sset(key, val, opts){
+  const fromRemote = !!(opts && opts.fromRemote);
+  // Refuse local edits to locked fields unless the Department Head is signed in.
+  // (Remote values arriving from Firebase are always accepted — they already passed
+  // the server-side rules.)
+  if (!fromRemote && isLockedKey(key) && !isAuthorizedEditor) return;
   STORE[key] = val;
   saveStore();
-  if (fbRef && !(opts && opts.fromRemote)) {
+  if (fbRef && !fromRemote) {
     fbRef.child(fbKey(key)).set(val).catch(err => console.warn('[sync] write failed', key, err));
   }
 }
@@ -562,13 +586,13 @@ function icon(name, style){ return `<span class="mi" style="${style||''}">${name
 /* ============================= AUTH CONTROL (sidebar widget) ============================= */
 function renderAuthControl(){
   if (!currentUser) {
-    return `<button data-signin="1" style="margin-top:10px;width:100%;height:32px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:500 12.5px/1 Roboto,sans-serif;color:rgba(0,0,0,.7);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">${icon('lock','font-size:15px')}Sign in to edit ML counts</button>`;
+    return `<button data-signin="1" style="margin-top:10px;width:100%;height:32px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:500 12.5px/1 Roboto,sans-serif;color:rgba(0,0,0,.7);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">${icon('lock','font-size:15px')}Sign in to edit</button>`;
   }
   if (isAuthorizedEditor) {
-    return `<div style="margin-top:10px;display:flex;align-items:center;gap:6px;font:500 12px/1.4 Roboto,sans-serif;color:#1E4620">${icon('check_circle','font-size:15px;color:#2E7D32')}Signed in — ML counts unlocked
+    return `<div style="margin-top:10px;display:flex;align-items:center;gap:6px;font:500 12px/1.4 Roboto,sans-serif;color:#1E4620">${icon('check_circle','font-size:15px;color:#2E7D32')}Editing enabled
       <button data-signout="1" style="margin-left:auto;border:0;background:none;color:#9592A6;font:400 11.5px/1 Roboto,sans-serif;cursor:pointer;text-decoration:underline">Sign out</button></div>`;
   }
-  return `<div style="margin-top:10px;font:400 11.5px/1.5 Roboto,sans-serif;color:#9592A6">Signed in as ${esc(currentUser.email || '')} — not authorized to edit ML counts
+  return `<div style="margin-top:10px;font:400 11.5px/1.5 Roboto,sans-serif;color:#9592A6">Signed in as ${esc(currentUser.email || '')} — view-only access
     <button data-signout="1" style="display:block;margin-top:4px;border:0;background:none;color:#9592A6;font:400 11.5px/1 Roboto,sans-serif;cursor:pointer;text-decoration:underline;padding:0">Sign out</button></div>`;
 }
 
@@ -619,7 +643,13 @@ function renderHeader(){
     <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;max-width:520px">
       ${ROLE_DEFS.map(r => `<button class="rolebtn ${state.role===r.id?'active':''}" data-role="${r.id}">${esc(r.label)}</button>`).join('')}
     </div>
-  </div>`;
+  </div>
+  ${isAuthorizedEditor ? '' : `
+  <div class="no-print" style="display:flex;align-items:center;gap:10px;background:#F5F5F5;border-radius:4px;padding:10px 16px;font:400 12.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">
+    ${icon('visibility','font-size:16px;color:#9592A6')}
+    <span style="flex:1">View-only mode. Browse every section, print the forms, and follow the links — data entry is reserved for the Department Head.</span>
+    <button data-signin="1" style="flex-shrink:0;height:28px;padding:0 12px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:500 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.7);cursor:pointer">Sign in</button>
+  </div>`}`;
 }
 
 /* ============================= SCREEN: DASHBOARD ============================= */
@@ -631,15 +661,12 @@ function statusColors(status){
 function renderDash(){
   const roleDef = ROLE_DEFS.find(r => r.id === state.role) || ROLE_DEFS[0];
   const rows = state.campus === 'All Campuses' ? CAMPUSES : [state.campus];
-  const lockAttr = isAuthorizedEditor ? '' : 'disabled title="Only the Department Head can edit ML counts"';
   return `
   <div style="display:flex;align-items:flex-start;gap:12px;background:#FDECEA;border-radius:4px;padding:14px 18px">
     ${icon('error_outline','font-size:22px;color:#D32F2F')}
     <div><div style="font:500 14px/1.4 Roboto,sans-serif;color:#5F2120">Hard deadline — September 18, 2026</div>
     <div style="font:400 13px/1.6 Roboto,sans-serif;color:#5F2120;margin-top:2px">Identification must be 100% complete for every student: Home Language Survey, Records Review, and ELP screening, fully documented. No exceptions, no extensions.</div></div>
   </div>
-
-  ${!isAuthorizedEditor ? `<div style="display:flex;align-items:center;gap:10px;background:#F5F5F5;border-radius:4px;padding:10px 16px;font:400 12.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">${icon('lock','font-size:16px;color:#9592A6')}ML counts below are locked to the Department Head. Everything else on this page stays editable for everyone.</div>` : ''}
 
   <div class="g4">
     ${[
@@ -651,7 +678,7 @@ function renderDash(){
       <div class="card" style="padding:16px 20px;display:flex;align-items:center;gap:16px">
         <div style="width:52px;height:52px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">${icon(ic,'font-size:26px;color:#fff')}</div>
         <div>
-          <input class="entry" style="min-width:74px;height:38px;font:700 22px/1 MuseoModerno,sans-serif;color:#1a1a1a" data-store="${key}" value="${esc(sget(key,''))}" placeholder="—" ${lockAttr}>
+          <input class="entry" style="min-width:74px;height:38px;font:700 22px/1 MuseoModerno,sans-serif;color:#1a1a1a" data-store="${key}" value="${esc(sget(key,''))}" placeholder="—">
           <div style="font:400 13px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:6px">${label}</div>
         </div>
       </div>`).join('')}
@@ -661,7 +688,7 @@ function renderDash(){
     <div class="tcard card">
       <div style="display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid rgba(0,0,0,.12)">
         <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1;letter-spacing:.15px">Program Status by Campus</h3>
-        <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Enter counts per campus</span>
+        <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">${editHint('Enter counts per campus')}</span>
       </div>
       <table style="width:100%;min-width:600px;border-collapse:collapse">
         <thead><tr>
@@ -679,11 +706,11 @@ function renderDash(){
               <td style="padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.12);font:400 13.5px/1.4 Roboto,sans-serif">
                 <span style="display:inline-flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:#FF9215;flex-shrink:0"></span>${esc(name)}</span>
               </td>
-              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:ml" value="${esc(sget('camp:'+name+':ml',''))}" placeholder="—" ${lockAttr}></td>
-              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:screened" value="${esc(sget('camp:'+name+':screened',''))}" placeholder="—" ${lockAttr}></td>
-              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:fml" value="${esc(sget('camp:'+name+':fml',''))}" placeholder="—" ${lockAttr}></td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:ml" value="${esc(sget('camp:'+name+':ml',''))}" placeholder="—"></td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:screened" value="${esc(sget('camp:'+name+':screened',''))}" placeholder="—"></td>
+              <td style="padding:11px 10px;border-bottom:1px solid rgba(0,0,0,.12)"><input class="entry" data-store="camp:${esc(name)}:fml" value="${esc(sget('camp:'+name+':fml',''))}" placeholder="—"></td>
               <td style="padding:11px 20px;border-bottom:1px solid rgba(0,0,0,.12)">
-                <select class="status-select" data-store-select="camp:${esc(name)}:status" style="background:${col.bg};color:${col.color}" ${lockAttr}>
+                <select class="status-select" data-store-select="camp:${esc(name)}:status" style="background:${col.bg};color:${col.color}">
                   <option ${status==='Not started'?'selected':''}>Not started</option>
                   <option ${status==='In progress'?'selected':''}>In progress</option>
                   <option ${status==='Complete'?'selected':''}>Complete</option>
@@ -1087,7 +1114,7 @@ function renderFml(){
   <div class="card" style="padding:22px 24px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
       <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">Monitoring Log</h3>
-      <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">Enter counts and dates per marking period</span>
+      <span style="font:400 12px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">${editHint('Enter counts and dates per marking period')}</span>
     </div>
     <table style="width:100%;border-collapse:collapse">
       <thead><tr>
@@ -1256,7 +1283,9 @@ function renderPlc(){
             <div style="font:500 13px/1.5 Roboto,sans-serif">Zoom Meeting</div>
             ${zoom
               ? `<a href="${esc(zoom)}" target="_blank" rel="noopener" style="font:400 12.5px/1.6 Roboto,sans-serif;color:#9747FF;text-decoration:none;word-break:break-all">${esc(zoom)}</a>`
-              : `<input class="entry entry-wide" style="max-width:260px" data-store="plc:${c.key}:zoom" placeholder="Paste Zoom link…" value="">`
+              : (isAuthorizedEditor
+                  ? `<input class="entry entry-wide" style="max-width:260px" data-store="plc:${c.key}:zoom" placeholder="Paste Zoom link…" value="">`
+                  : `<div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.38)">${esc(sget('plc:'+c.key+':zoomLabel','Zoom link pending'))}</div>`)
             }
           </div>
           ${zoom ? `<a href="${esc(zoom)}" target="_blank" rel="noopener" class="btn-solid">Join</a>` : ''}
@@ -1285,7 +1314,7 @@ function renderPlc(){
 
   <div class="card" style="padding:22px 24px">
     <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Weekly Topic Rotation &amp; Sign-Up</h3>
-    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">One teacher leads each week — a 40-minute presentation or online workshop, followed by cohort debrief. Both cohorts run the same topic in the same week so the Tuesday and Wednesday groups stay in step. Claim a week by entering your name; topics may be swapped with the Department Head's approval.</p>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">One teacher leads each week — a 40-minute presentation or online workshop, followed by cohort debrief. Both cohorts run the same topic in the same week so the Tuesday and Wednesday groups stay in step. ${isAuthorizedEditor ? 'Claim a week by entering a presenter name; topics may be swapped with the Department Head&rsquo;s approval.' : 'To claim a week or swap a topic, contact the Department Head.'}</p>
     <div style="display:flex;flex-direction:column;gap:22px">
       ${PLC_QUARTERS.map(q => `
         <div>
@@ -1459,6 +1488,7 @@ const SCREEN_RENDERERS = {
 function renderAll(){
   document.getElementById('sidebar').innerHTML = renderSidebar();
   document.getElementById('main').innerHTML = renderHeader() + (SCREEN_RENDERERS[state.screen] || renderDash)();
+  applyLockState(); // runs before paint, so locked fields never flash as editable
 }
 
 /* ============================= EVENTS ============================= */

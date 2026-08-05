@@ -3,10 +3,8 @@
     ".read": false,
     ".write": false,
     "store": {
-      "$key": {
-        ".read": true,
-        ".write": "( $key.beginsWith('dashMetric:') || ( $key.beginsWith('camp:') && ( $key.endsWith(':ml') || $key.endsWith(':screened') || $key.endsWith(':fml') || $key.endsWith(':status') ) ) ) ? (auth != null && auth.token.email == 'gcosgun@ilearnschools.org') : true"
-      }
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'gcosgun@ilearnschools.org'"
     }
   }
 }
