@@ -74,6 +74,9 @@ input[type=checkbox]:disabled{cursor:default;opacity:.55}
 .navbtn.active{color:#E07A00;background:#FFF1DE;border-left:3px solid #FF9215}
 .navbtn .mi{font-size:20px;color:rgba(0,0,0,.6)}
 .navbtn.active .mi{color:#E07A00}
+/* New York group reads in purple so NJ and NY rules are never visually confused. */
+.navbtn.ny.active{color:#5B2AA8;background:#EDE4FF;border-left:3px solid #9747FF}
+.navbtn.ny.active .mi{color:#5B2AA8}
 
 .rolebtn{height:32px;padding:0 12px;border:1px solid #E0E0E0;border-radius:9999px;background:#fff;color:rgba(0,0,0,.6);font:400 13px/1 Roboto,sans-serif;cursor:pointer}
 .rolebtn:hover{background:#FAFAFA}
@@ -172,13 +175,15 @@ const TITLES = {
   dash: 'Department Dashboard', timeline: 'Program Timeline', ident: 'Identification',
   service: 'Service & Instruction', exit: 'Exit & Reclassification', fml: 'Former ML Monitoring',
   notices: 'Parent Notices & Family Rights', pac: 'Parent Advisory Committee',
-  plc: 'Weekly PLC Cohorts', wida: 'WIDA ELD Standards & Regulations', curriculum: 'ESL Curriculum Files'
+  plc: 'Weekly PLC Cohorts', wida: 'WIDA ELD Standards & Regulations', curriculum: 'ESL Curriculum Files',
+  nyenl: 'NY ENL Program & Regulations', nytimeline: 'NY ENL Timeline 2026–2027', nyresources: 'NY ENL Resources'
 };
 
 const NAV_DEFS = [
   { label: 'Overview', items: [['dash','dashboard','Department Dashboard'], ['timeline','event_note','Program Timeline']] },
   { label: 'Student Pathway', items: [['ident','assignment','Identification'], ['service','menu_book','Service & Instruction'], ['exit','logout','Exit & Reclassification'], ['fml','visibility','Former ML Monitoring']] },
   { label: 'Families & Staff', items: [['notices','mail','Parent Notices'], ['plc','cast_for_education','Weekly PLC'], ['pac','groups','Parent Advisory Cmte.']] },
+  { label: 'New York — Bronx', ny: true, items: [['nyenl','account_balance','ENL Program & Regs'], ['nytimeline','date_range','NY Timeline 2026–27'], ['nyresources','collections_bookmark','NY Resources']] },
   { label: 'Reference', items: [['wida','school','WIDA ELD Standards'], ['curriculum','folder_open','ESL Curriculum Files']] }
 ];
 
@@ -465,6 +470,165 @@ const CONTACTS = [
   { who: 'Full NJDOE guidance', how: 'nj.gov/education/title3' }
 ];
 
+/* ===================== NEW YORK / BRONX — ENL (CR Part 154) ===================== */
+
+/* Which NY requirements apply to a NY public charter school vs. which are NYC DOE
+   district-only systems. Keeping this explicit prevents staff from chasing NYC DOE
+   screens (ATS/STARS/iPlan) that Bronx ASCS does not use. */
+const NY_APPLIES = [
+  { yes: true,  t: 'CR Part 154 identification, programming, units of study, staffing, exit, and former-ELL service requirements' },
+  { yes: true,  t: 'NYSED annual English language proficiency assessment and the state testing windows' },
+  { yes: true,  t: 'Parent notification, mandated parent orientation, and the annual ELL parent meeting' },
+  { yes: true,  t: 'Records retention — student cumulative folder and school-level ELL folder of critical documents' },
+  { yes: true,  t: 'NY Education Law § 3201-b immigration-status protections (charter schools named explicitly)' },
+  { yes: false, t: 'NYC DOE data systems — ATS screens (BIOU, ELLO, ELPC, BNDC, RQSA), STARS programming, RLER/RLBA reports' },
+  { yes: false, t: 'NYC DOE planning tools — iPlan portal, Language Allocation Policy (LAP) template, NYC Title III submissions' },
+  { yes: false, t: 'Aspira Consent Decree and NYC DOE ML/ELL director / compliance specialist structures' }
+];
+
+const NY_PROFICIENCY = [
+  { n: '1', name: 'Entering', sub: 'Beginning', desc: 'Great dependence on supports and structures to advance academic language skills.', ell: 'Current ELL' },
+  { n: '2', name: 'Emerging', sub: 'Low Intermediate', desc: 'Some dependence on supports and structures to advance academic language skills.', ell: 'Current ELL' },
+  { n: '3', name: 'Transitioning', sub: 'Intermediate', desc: 'Some independence in advancing academic language skills.', ell: 'Current ELL' },
+  { n: '4', name: 'Expanding', sub: 'Advanced', desc: 'Great independence; approaching the linguistic demands of academic contexts.', ell: 'Current ELL' },
+  { n: '5', name: 'Commanding', sub: 'Proficient', desc: 'Has met the linguistic demands necessary for a variety of academic contexts.', ell: 'Not an ELL / Former ELL' }
+];
+
+/* CR Part 154-2 ENL Units of Study — Grades K-8. One unit of study = 180 min/week. */
+const NY_UOS_K8 = {
+  cols: ['Entering','Emerging','Transitioning','Expanding','Commanding'],
+  rows: [
+    { label: 'Total ENL time (minimum)', vals: ['2 units (360 min)','2 units (360 min)','1 unit (180 min)','1 unit (180 min)','Services continue 2 more years'] },
+    { label: 'Stand-alone ENL', vals: ['1 unit (180 min)','0.5 unit (90 min)','—','—','—'] },
+    { label: 'Integrated ENL', vals: ['1 unit ENL/ELA (180 min)','1 unit ENL/ELA (180 min)','0.5 unit ENL/ELA (90 min)','1 unit ENL/ELA or core content (180 min)','—'] },
+    { label: 'Flexible 0.5 unit', vals: ['—','Stand-alone or Integrated (90 min)','Stand-alone or Integrated (90 min)','—','0.5 unit Integrated ENL or approved former-ELL service'] },
+    { label: 'Weekly total', vals: ['360 min','360 min','180 min','180 min','90 min (former ELL)'] }
+  ]
+};
+
+/* CR Part 154-2 ENL Units of Study — Grades 9-12. */
+const NY_UOS_912 = {
+  cols: ['Entering','Emerging','Transitioning','Expanding','Commanding'],
+  rows: [
+    { label: 'Total ENL time (minimum)', vals: ['3 units (540 min)','2 units (360 min)','1 unit (180 min)','1 unit (180 min)','Services continue 2 more years'] },
+    { label: 'Stand-alone ENL', vals: ['1 unit (180 min)','0.5 unit (90 min)','—','—','—'] },
+    { label: 'Integrated ENL', vals: ['1 unit ENL/ELA (180 min)','1 unit ENL/ELA (180 min)','0.5 unit ENL/core content (90 min)','1 unit ENL/core content (180 min)','—'] },
+    { label: 'Flexible unit', vals: ['1 unit stand-alone or Integrated in core content (180 min)','0.5 unit stand-alone or Integrated (90 min)','0.5 unit stand-alone or Integrated (90 min)','—','0.5 unit Integrated ENL or approved former-ELL service'] },
+    { label: 'Weekly total', vals: ['540 min','360 min','180 min','180 min','90 min (former ELL)'] }
+  ]
+};
+
+const NY_STAFFING = [
+  { model: 'Stand-alone ENL', who: 'K–12 certified ESOL teacher' },
+  { model: 'Integrated ENL — one dually certified teacher', who: 'Teacher holding both ESOL and Common Branch (K–6) or Content Area (7–12) certification' },
+  { model: 'Integrated ENL — co-teaching', who: 'A certified ESOL teacher paired with a K–6 elementary teacher, or with a 7–12 certified content teacher (ELA, Math, Science, Social Studies)' }
+];
+
+const NY_IDENT_STEPS = [
+  { n: '1', title: 'Check prior NYS enrollment', body: 'If the student attended a NYS public school within the past 2 years, obtain the prior screener/annual assessment scores and continue the existing ELL status and proficiency level. Do not re-identify. If enrolling new to NYS, or returning after more than 2 years, continue to Step 2.' },
+  { n: '2', title: 'Home Language Questionnaire + individual interview', body: 'Administered in person by qualified personnel in the parent&rsquo;s preferred language, including the mandated documented individual interview with student and parent to determine home language. Stop here if the home language is English.' },
+  { n: '3', title: 'Determine screener eligibility and administer', body: 'For students with an IEP, a Language Proficiency Team convenes to determine eligibility. Administer the identification screener within the required timeline. For 2026&ndash;27 this remains the NYSITELL; the WIDA Screener replaces it in Fall 2027.' },
+  { n: '4', title: 'Send entitlement / non-entitlement letters', body: 'Within 5 school days of the ELL determination, in the parent&rsquo;s preferred language. Letters state the results, the ELL status, and the right to seek review of the determination.' },
+  { n: '5', title: 'Home language assessment', body: 'Administer the home language literacy assessment to newly identified ELLs whose home language is Spanish (administered once, and not to students re-entering after two years).' },
+  { n: '6', title: 'Determine SIFE status', body: 'Students with Inconsistent/Interrupted Formal Education must be determined within 30 school days of enrollment (modifiable within 12 months). Use the NYSED Oral Interview Questionnaire for grades 3&ndash;9 where a gap is suspected, then the Multilingual Literacy screener if a gap of 2+ years is found.' },
+  { n: '7', title: 'Parent orientation', body: 'A trained pedagogue conducts orientation with interpretation available, covering all program types (Dual Language, Transitional Bilingual, ENL), learning standards, assessments, and expectations. Parents complete the program agreement form.' },
+  { n: '8', title: 'Place and program the student', body: 'Program every ELL for at least the minimum ENL minutes for their grade and proficiency level. Identification must be complete within 10 school days of enrollment (20 school days for students entering with an IEP).' },
+  { n: '9', title: 'Re-identification, if requested', body: 'A parent, a student aged 18+, or a teacher with parent approval may appeal the ELL determination within 45 school days of the initial or reentry determination.' },
+  { n: '10', title: 'Six-to-twelve-month review after a reversal', body: 'Where ELL status was reversed, review the student&rsquo;s progress within 6 to 12 months to confirm the determination has not adversely affected academic progress; add services or restore status as needed.' }
+];
+
+const NY_EXIT = [
+  'Score Commanding (proficient) on the annual English language proficiency assessment; or',
+  'Score Expanding (advanced) on the annual assessment plus level 3 or 4 on the grades 3&ndash;8 NYS ELA exam; or',
+  'Score Expanding (advanced) on the annual assessment plus 65 or above on the NYS ELA Regents exam.'
+];
+
+const NY_FORMER_PATHWAYS = [
+  { opt: 'Option A', t: 'Small-group learning' },
+  { opt: 'Option C', t: 'Project-based learning' },
+  { opt: 'Option D', t: 'A minimum of 90 minutes per week of Integrated ENL' },
+  { opt: 'Option E', t: 'High school only — a non&ndash;World Language Advanced Placement class, serving as the pathway for the student&rsquo;s first year as a former ELL and subject to an attendance condition' }
+];
+
+/* 2026-27 NY timeline for Bronx ASCS.
+   - State-dated items: NYSED "Final Dates for the 2026–27 Elementary- and
+     Intermediate-level Testing" memo (June 2026).
+   - Student-relative deadlines: CR Part 154 school-day counts, converted to calendar
+     dates against the Bronx ASCS 2026-2027 calendar (first day Mon Aug 31, 2026;
+     180 instructional days). The conversion was validated by reproducing the
+     calendar's own month totals and quarter boundaries (Q1 = 41 days ending Oct 30).
+   - § 3201-b: NY Educ. Law § 3201-b model policy and compliance procedures. */
+const NY_TIMELINE = [
+  { date: 'Aug 31, 2026', sub: 'First day of school', tag: 'Start', kind: 'op', title: 'Bronx ASCS 2026–2027 begins', body: 'Q1 runs Aug 31 &ndash; Oct 30. Every returning ELL and former ELL should already be programmed for their required minutes on day one. 180 instructional days, ending Jun 22, 2027.' },
+  { date: 'By Sep 14, 2026', sub: '10 school days', tag: 'Deadline', kind: 'reg', title: 'Identification complete for first-day enrollees', body: 'Home Language Questionnaire, individual interview, screener eligibility, screener administration, parent notification, orientation, and placement — all complete and documented within 10 school days of enrollment. For students enrolling later in the year, the 10-school-day clock runs from their own enrollment date.' },
+  { date: 'By Sep 29, 2026', sub: '20 school days', tag: 'Deadline', kind: 'reg', title: 'Identification complete — students with an IEP', body: 'A Language Proficiency Team must convene to determine screener eligibility. Disability is never grounds for exemption from English language proficiency screening; assess with the accommodations in the IEP.' },
+  { date: 'By Sep 14, 2026', sub: 'Within first 2 weeks', tag: 'Notices', kind: 'reg', title: 'Continued-entitlement and exit letters sent', body: 'Continuing ELLs and newly exited former ELLs must be notified in the parent&rsquo;s preferred language before the year begins, and no later than the first two weeks of the school year.' },
+  { date: 'By Oct 14, 2026', sub: '30 school days', tag: 'SIFE', kind: 'reg', title: 'SIFE status determined and recorded', body: 'Oral Interview Questionnaire for grades 3&ndash;9 where a gap is suspected, then the Multilingual Literacy screener where a gap of two or more years is indicated. Status remains modifiable within 12 months of enrollment.' },
+  { date: 'Oct 30, 2026', sub: 'Q1 ends · 41 days', tag: 'Reporting', kind: 'op', title: 'First marking period closes', body: 'Review ELL and former-ELL progress against report card grades. For former ELLs, this is the first checkpoint that the alternative pathway is actually supporting academic progress.' },
+  { date: 'By Nov 5, 2026', sub: '45 school days', tag: 'Appeals', kind: 'reg', title: 'Re-identification appeal window closes', body: 'A parent, a student aged 18 or older, or a teacher with parent approval may request the identification process be run a second time. Where a status is reversed, review the student&rsquo;s progress 6 to 12 months later.' },
+  { date: 'Nov 13, 2026', sub: 'Early dismissal', tag: 'Families', kind: 'op', title: 'Parent conferences', body: 'The annual individual ELL parent meeting required by CR Part 154 is separate from and in addition to this conference — it cannot be satisfied by it.' },
+  { date: 'Feb 1 – Apr 9, 2027', sub: 'State window', tag: 'Assessment', kind: 'state', title: 'WIDA ACCESS and Alternate ACCESS — first NY administration', body: 'Replaces the NYSESLAT, whose final administration was Spring 2026. All ELLs in grades K&ndash;12 must be assessed, and every domain is required for a valid score. At Bronx ASCS the window contains 37 available school days once Midwinter Recess (Feb 15&ndash;19), Feb 12, Eid al-Fitr (Mar 9), and Spring Recess (Mar 26&ndash;Apr 2) are removed.' },
+  { date: 'Mar 8 – Jun 11, 2027', sub: 'State window', tag: 'Assessment', kind: 'state', title: 'NYSAA — ELA, Mathematics, and Science', body: 'New York State Alternate Assessment window for eligible students with significant cognitive disabilities.' },
+  { date: 'Apr 5 – May 14, 2027', sub: 'State window', tag: 'Assessment', kind: 'state', title: 'Grades 3–8 ELA and Math; Grades 5 & 8 Science', body: 'Select two consecutive days within the window per grade and subject, testing the whole grade together; grades 5 and 8 Science test on a single day. Scoring must be complete by Fri May 21, 2027. Note the five-school-day overlap with the close of the WIDA window (Apr 5&ndash;9) — schedule WIDA to finish before April.' },
+  { date: 'Apr 9, 2027', sub: 'Q3 ends', tag: 'Deadline', kind: 'state', title: 'WIDA ACCESS window closes', body: 'All WIDA administration must be complete. Make-ups must be given inside the window — there is no extension.' },
+  { date: 'By Apr 15, 2027', sub: 'Hard deadline', tag: 'Assessment', kind: 'state', title: 'All WIDA materials shipped to DRC', body: 'Every WIDA test material, used and unused, must be shipped to Data Recognition Corporation no later than Thursday, April 15, 2027.' },
+  { date: 'Spring 2027', sub: 'When results arrive', tag: 'Exit', kind: 'op', title: 'Apply exit criteria and notify families', body: 'Send exit / non-entitlement letters and schedule two years of former-ELL services for every student who tests out. NYSED will publish WIDA ACCESS exit determinations for the new assessment — confirm the applicable cut score with OBEWL before making exit decisions.' },
+  { date: 'Jun 22, 2027', sub: 'Last day of school', tag: 'Year close', kind: 'op', title: 'Year closes — Q4 ends', body: 'Half days for students run Jun 14&ndash;22. Confirm every ELL cumulative folder and the school-level ELL folder of critical documents are complete before the year ends.' },
+  { date: 'Fall 2027', sub: 'Next year — plan now', tag: 'Transition', kind: 'state', title: 'WIDA Screener replaces the NYSITELL', body: 'Identification moves from NYSITELL to the WIDA Screener in Fall 2027. Staff certified on the NYSITELL will need WIDA Screener training, and identification procedures will need rewriting before that year begins. This also aligns the Bronx campuses with the NJ campuses, which already use the WIDA Screener.' },
+  { date: 'Ongoing', sub: 'Every enrollment', tag: 'Identification', kind: 'op', title: 'NYSITELL administered as students enroll', body: 'NYSITELL remains the identification test for all of 2026&ndash;27. The level administered depends on grade and the date administration begins — Grade K Level I runs Jun 1 &ndash; Jan 31; levels for grades 1&ndash;12 open Jul 15.' },
+  { date: 'Ongoing', sub: 'Within 5 school days', tag: 'Notices', kind: 'reg', title: 'Entitlement / non-entitlement letters', body: 'Sent within 5 school days of each ELL determination, in the parent&rsquo;s preferred language, stating the results, the ELL status, and the right to seek review of the determination.' },
+  { date: 'Ongoing', sub: 'At least once a year', tag: 'Families', kind: 'reg', title: 'Annual individual ELL parent meeting', body: 'Meet the parents of every ELL individually at least once a year, with a qualified interpreter, to discuss program goals, proficiency results, and language development across all content areas. Best scheduled once screener or annual assessment results are available. Keep evidence and attendance records.' },
+  { date: 'Verify now', sub: 'Statutory date May 27, 2026', tag: '§ 3201-b', kind: 'law', title: 'Certify § 3201-b compliance in the NYSED portal', body: 'Within 60 days of publication of the model procedures, the Superintendent or Chief Administrative Officer must certify to the Commissioner that compliant procedures are developed and implemented. Charter schools are named explicitly in the law. Confirm this certification has been filed for the Bronx campuses.' }
+];
+
+const NY_TIMELINE_KIND = {
+  reg:   { label: 'CR Part 154', bg: '#E8F4FD', color: '#014361' },
+  state: { label: 'NYSED date',  bg: '#EDE4FF', color: '#4A2380' },
+  law:   { label: 'NY law',      bg: '#FDECEA', color: '#5F2120' },
+  op:    { label: 'Operational', bg: '#F5F5F5', color: 'rgba(0,0,0,.6)' }
+};
+
+const NY_CTE_GUIDES = [
+  { name: 'Supporting Language Acquisition and Proficiency', url: 'https://nyctecenter.org/images/CTE_MLL_Supporting_Language_Acquisition_and_Proficiency_New_12.25_508.pdf' },
+  { name: 'Effective Classroom Practices', url: 'https://nyctecenter.org/images/CTE_MLL_Effective_Classroom_Practices_NEW_12.25_508.pdf' },
+  { name: 'Creating an Inclusive Learning Space', url: 'https://nyctecenter.org/images/CTE_MLL_Creating_an_Inclusive_Learning_Space_NEW_12.25_508.pdf' },
+  { name: 'Facilitating Classroom Conversations', url: 'https://nyctecenter.org/images/CTE_MLL_Facilitating_Classroom_Conversations_NEW_12.25_508.pdf' },
+  { name: 'Getting to Know Your Team', url: 'https://nyctecenter.org/images/CTE_MLL_Getting_to_Know_Your_Team_508.pdf' },
+  { name: 'Social Emotional Learning', url: 'https://nyctecenter.org/images/CTE_MLL_Social_Emotional_Learning_508.pdf' },
+  { name: 'Developing Reading and Vocabulary Skills', url: 'https://nyctecenter.org/images/CTE_MLL_Developing_Reading_and_Vocabulary_Skills_508.pdf' },
+  { name: 'Developing Writing Skills', url: 'https://nyctecenter.org/images/CTE_MLL_Developing_Writing_Skills_508.pdf' },
+  { name: 'Developing Listening and Speaking Skills', url: 'https://nyctecenter.org/images/CTE_MLL_Developing_Listening_Speaking_Skills_508.pdf' }
+];
+
+const NY_CTE_SUPPLEMENTAL = [
+  { name: 'About the Series — how to use the guides', url: 'https://nyctecenter.org/images/CTE_MLL_About_the_Series_NEW_12.25_508.pdf' },
+  { name: 'MLL Fast Facts', url: 'https://nyctecenter.org/images/CTE_MLL_Fast_Facts_NEW_12.25_508.pdf' },
+  { name: 'Supporting Special Populations in NYS CTE Programs', url: 'https://nyctecenter.org/images/CTE_SupportingSpecialPopulations_508.pdf' },
+  { name: 'Supporting All Students in NYS CTE Programs', url: 'https://nyctecenter.org/images/Supporting_All_Students_in_NYS_CTE_Final_508.pdf' }
+];
+
+const NY_NYSED_LINKS = [
+  { name: 'Office of Bilingual Education and World Languages (OBEWL)', meta: 'Bilingual / ENL questions · (518) 474-8775', url: 'http://www.nysed.gov/program-offices/office-bilingual-education-and-world-languages-obewl' },
+  { name: 'Working with MLLs/ELLs — OBEWL Resource Guide', meta: 'Practitioner guide', url: 'https://nyctecenter.org/images/resource-guide-working-with-mlls_ells-obewl-final-nov.-25-a.pdf' },
+  { name: 'Regional Bilingual Education Resource Network (RBERN)', meta: 'Regional PD and technical support', url: 'http://www.nysed.gov/bilingual-ed/regional-supportrberns' },
+  { name: 'ELL/MLL Assessment and Testing Accommodations', meta: 'Accommodations guidance', url: 'http://www.nysed.gov/bilingual-ed/english-language-learner-and-multilingual-learner-assessment-testing-accommodations' },
+  { name: 'WIDA Consortium — New York State', meta: 'Transition hub for ACCESS and Screener', url: 'https://www.nysed.gov/bilingual-ed/news/wida-consortium-new-york-state-education-department' },
+  { name: 'WIDA in New York', meta: 'wida.wisc.edu state page', url: 'https://wida.wisc.edu/memberships/consortium/ny' },
+  { name: 'English Learners and CTE — US Dept. of Education', meta: 'Federal fact sheet', url: 'https://nyctecenter.org/images/ctefactsheet-20240908-508.pdf' },
+  { name: 'iLearn Bronx Academic Calendar', meta: 'Bronx ASCS 2026–2027', url: 'https://ilearnschools.org/academics/bronx-academic-calendar/' }
+];
+
+const NY_BLUEPRINT = [
+  'All teachers are teachers of ELLs/MLLs and plan accordingly — culturally and linguistically appropriate instruction, integrated language and content, purposeful collaboration between ENL, bilingual, and content teachers.',
+  'School boards and leaders are responsible for the academic, linguistic, social, and emotional needs of ELLs/MLLs — a clear vision, aligned resources, and a safe, inclusive environment.',
+  'Engage every ELL/MLL in grade-appropriate, academically rigorous instruction aligned to the Next Generation Learning Standards — explicit content and language objectives, research-based vocabulary instruction, structured peer discussion.',
+  'Bilingualism and biliteracy are assets — provide pathways to the NYS Seal of Biliteracy, and alternate pathways where a home language is low-incidence.',
+  'Parents and families are partners — information about rights and program choices in a language they understand, training in English and the home language, engagement as cultural liaisons.',
+  'Leverage the expertise of bilingual, ENL, and World Language teachers while building their professional capacity through sustained, meaningful professional development.',
+  'Leverage home languages, cultural assets, and prior knowledge as instructional assets, promoting diversity under the Dignity for All Students Act.',
+  'Use diagnostic tools and formative assessment to measure content knowledge alongside new- and home-language development, using proficiency data to place students on the language development continuum.'
+];
+
 const CHALK_URL = 'https://isi-5212.chalk.com/curriculum/subjects';
 const CHALK_PUBLIC_URL = 'https://isi-5212.chalk.com/public';
 const CURRICULUM_GROUPS = [
@@ -599,9 +763,11 @@ function renderAuthControl(){
 /* ============================= SIDEBAR ============================= */
 function renderSidebar(){
   const groups = NAV_DEFS.map(g => `
-    <div style="font:500 11px/1 Roboto,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.6);padding:18px 20px 6px">${esc(g.label)}</div>
+    <div style="font:500 11px/1 Roboto,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:${g.ny?'#5B2AA8':'rgba(0,0,0,.6)'};padding:18px 20px 6px;display:flex;align-items:center;gap:6px">
+      ${g.ny ? '<span style="width:6px;height:6px;border-radius:50%;background:#9747FF;flex-shrink:0"></span>' : ''}${esc(g.label)}
+    </div>
     ${g.items.map(([id, ic, label]) => `
-      <button class="navbtn ${state.screen===id?'active':''}" data-nav="${id}">
+      <button class="navbtn ${g.ny?'ny':''} ${state.screen===id?'active':''}" data-nav="${id}">
         ${icon(ic, 'font-size:20px')}${esc(label)}
       </button>`).join('')}
   `).join('');
@@ -626,12 +792,15 @@ function renderSidebar(){
 }
 
 /* ============================= HEADER ============================= */
+const NY_SCREENS = ['nyenl','nytimeline','nyresources'];
+function isNyScreen(){ return NY_SCREENS.indexOf(state.screen) !== -1; }
+
 function renderHeader(){
   const roleDef = ROLE_DEFS.find(r => r.id === state.role) || ROLE_DEFS[0];
   return `
   <div class="card" style="padding:18px 24px;display:flex;align-items:center;gap:16px">
     <div style="min-width:0">
-      <div style="font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">iLEMIS<span style="margin:0 8px;opacity:.4">/</span>ESL &amp; Bilingual Department</div>
+      <div style="font:400 13px/1 Roboto,sans-serif;color:rgba(0,0,0,.6)">iLEMIS<span style="margin:0 8px;opacity:.4">/</span>ESL &amp; Bilingual Department${isNyScreen() ? '<span style="margin:0 8px;opacity:.4">/</span><span style="color:#5B2AA8;font-weight:500">New York · CR Part 154</span>' : ''}</div>
       <h1 style="font:400 24px/1.3 Roboto,sans-serif;margin:4px 0 0">${esc(TITLES[state.screen] || 'Department Dashboard')}</h1>
       <div style="font:400 13px/1.4 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">2026 – 2027 School Year<span style="margin:0 8px;opacity:.4">|</span>${esc(state.campus)}</div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
@@ -1478,11 +1647,347 @@ function renderCurriculum(){
   `;
 }
 
+/* ============================= NY: BANNER SHARED BY NY SCREENS ============================= */
+function nyBanner(){
+  return `
+  <div style="display:flex;align-items:flex-start;gap:12px;background:#EDE4FF;border-radius:4px;padding:14px 18px">
+    ${icon('place','font-size:22px;color:#5B2AA8')}
+    <div>
+      <div style="font:500 14px/1.4 Roboto,sans-serif;color:#3D1A73">New York State rules — Bronx campuses only</div>
+      <div style="font:400 13px/1.6 Roboto,sans-serif;color:#3D1A73;margin-top:2px">Bronx Arts &amp; Science Charter School follows New York&rsquo;s Commissioner&rsquo;s Regulations Part 154 and NYSED assessment calendar. These requirements are different from the New Jersey campuses — do not apply NJ timelines, cut scores, or forms to Bronx students, or the reverse.</div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: NY ENL PROGRAM & REGULATIONS ============================= */
+function renderNyEnl(){
+  const uosTable = (t, caption) => `
+    <div class="tcard" style="margin-top:10px">
+      <table style="width:100%;min-width:760px;border-collapse:collapse">
+        <thead><tr>
+          <th style="text-align:left;padding:10px 12px;font:500 12.5px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12);min-width:150px">${caption}</th>
+          ${t.cols.map(c => `<th style="text-align:left;padding:10px 12px;font:500 12.5px/1.4 Roboto,sans-serif;background:#FAFAFA;border-bottom:1px solid rgba(0,0,0,.12)">${c}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${t.rows.map((r,i) => `<tr>
+            <td style="padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.12);font:500 12.5px/1.5 Roboto,sans-serif;${i===t.rows.length-1?'background:#FAFAFA':''}">${r.label}</td>
+            ${r.vals.map(v => `<td style="padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.12);font:400 12.5px/1.5 Roboto,sans-serif;color:${i===t.rows.length-1?'rgba(0,0,0,.87)':'rgba(0,0,0,.6)'};${i===t.rows.length-1?'background:#FAFAFA;font-weight:500':''}">${v}</td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  return `
+  ${nyBanner()}
+
+  <div style="display:flex;align-items:flex-start;gap:12px;background:#FFF4E0;border-radius:4px;padding:14px 18px">
+    ${icon('swap_horiz','font-size:22px;color:#663C00')}
+    <div>
+      <div style="font:500 14px/1.4 Roboto,sans-serif;color:#663C00">2026–27 is a transition year: NYSESLAT is gone</div>
+      <div style="font:400 13px/1.6 Roboto,sans-serif;color:#663C00;margin-top:2px">New York has joined the WIDA Consortium. The final NYSESLAT was administered in Spring 2026. <strong>WIDA ACCESS becomes the annual assessment this year (Feb 1 &ndash; Apr 9, 2027)</strong>, while the <strong>NYSITELL remains the identification test through 2026&ndash;27</strong> — the WIDA Screener replaces it in Fall 2027. The 2025&ndash;26 NYC policy guide still describes NYSESLAT throughout; read it with that substitution in mind.</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">What ENL Is</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Under CR Part 154 every school must offer an ENL program at minimum. One unit of study = 180 minutes per week.</p>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px">
+          <div style="font:500 13.5px/1.4 Roboto,sans-serif;color:#006DBD">Stand-alone ENL</div>
+          <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">English language development taught by a NYS certified ESOL teacher, as a separate block devoted to language development. <strong>It may not be delivered as push-in inside a content class</strong> — that distinction matters for compliance.</div>
+        </div>
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px">
+          <div style="font:500 13.5px/1.4 Roboto,sans-serif;color:#E07A00">Integrated ENL</div>
+          <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:4px">Core content plus language development in the same period, with home language supports and ELL scaffolds. In grades K&ndash;8, Entering through Transitioning pair with ELA; at Expanding it may pair with any content area. In grades 9&ndash;12, Entering and Emerging pair with ELA; Transitioning and Expanding may pair with any content area.</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">All ENL classes, integrated and stand-alone, offer home language support. Maximum grade span for grouping is two contiguous grades — <em>except</em> for ELLs in a special education class as defined by &sect; 200.1(uu). All programs must be provided during the school day.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Proficiency Levels</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Five levels. The level drives how many minutes of ENL a student receives.</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${NY_PROFICIENCY.map(p => `
+          <div style="display:flex;gap:14px;padding-bottom:8px;border-bottom:1px solid #F5F5F5">
+            <span style="width:26px;height:26px;flex-shrink:0;border-radius:50%;background:${p.n==='5'?'#2E7D32':'#0074C8'};color:#fff;font:700 13px/26px MuseoModerno,sans-serif;text-align:center">${p.n}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font:500 13.5px/1.4 Roboto,sans-serif">${p.name} <span style="font:400 12px/1.4 Roboto,sans-serif;color:#9592A6">${p.sub}</span></div>
+              <div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${p.desc}</div>
+            </div>
+            <span class="badge" style="flex-shrink:0;background:${p.n==='5'?'#E8F5E9':'#FFF1DE'};color:${p.n==='5'?'#1E4620':'#E07A00'};align-self:flex-start">${p.ell}</span>
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:10px;padding:12px 14px;background:#FAFAFA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Commanding on the <strong>identification screener</strong> means the student is not an ELL and is <strong>not</strong> a former ELL — no former-ELL services or accommodations. Commanding on the <strong>annual assessment</strong> means the student has exited and <strong>is</strong> a former ELL, entitled to two years of services and testing accommodations.</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">ENL Units of Study — CR Part 154-2</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 4px">Minimum required minutes per week by grade band and proficiency level. These are floors, not targets.</p>
+    <div style="font:500 13px/1.6 Roboto,sans-serif;margin-top:14px">Grades K–8</div>
+    ${uosTable(NY_UOS_K8,'Instruction')}
+    <div style="font:500 13px/1.6 Roboto,sans-serif;margin-top:20px">Grades 9–12</div>
+    ${uosTable(NY_UOS_912,'Instruction')}
+    <div style="margin-top:14px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Read the <strong>flexible unit</strong> row together with the two rows above it. The flexible 0.5 unit may be delivered as either stand-alone or integrated ENL, so actual stand-alone time can exceed the fixed row — an Emerging student in K&ndash;8 may receive up to a full unit of stand-alone ENL, and a 9&ndash;12 Entering student between 180 and 360 minutes.</div>
+    <div style="margin-top:10px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">High school credit: stand-alone ENL earns elective credit; integrated ENL earns core content credit in ELA, Math, Science, or Social Studies upon passing each corresponding unit of study.</div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Staffing &amp; Certification</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${NY_STAFFING.map(s => `<div style="display:flex;gap:14px;padding-bottom:10px;border-bottom:1px solid #F5F5F5"><div style="flex:1"><div style="font:500 13px/1.5 Roboto,sans-serif">${s.model}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:2px">${s.who}</div></div></div>`).join('')}
+      </div>
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:18px 0 8px">Bilingual Program Thresholds</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:14px;align-items:baseline"><span style="font:700 16px/1.3 MuseoModerno,sans-serif;width:70px;flex-shrink:0">K–8</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">15 or more ELLs of the same home language across two contiguous grades.</span></div>
+        <div style="display:flex;gap:14px;align-items:baseline"><span style="font:700 16px/1.3 MuseoModerno,sans-serif;width:70px;flex-shrink:0">9–12</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">20 or more ELLs of the same home language in any single grade.</span></div>
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">If a threshold is met, CR Part 154 <strong>mandates</strong> opening a bilingual program. Track parent program requests continuously so a threshold is never crossed unnoticed.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px;border-top:3px solid #2E7D32">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Exiting ELL Status</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 10px">Any one of these three pathways exits a student.</p>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        ${NY_EXIT.map((e,i) => `<div style="display:flex;gap:10px"><span style="width:20px;height:20px;flex-shrink:0;border-radius:50%;background:#E8F5E9;color:#1E4620;font:700 11px/20px MuseoModerno,sans-serif;text-align:center">${i+1}</span><span style="font:400 13px/1.6 Roboto,sans-serif">${e}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:10px;font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">For pathways 2 and 3, both scores must come from administrations within the same school year. August Regents results may pair with the prior spring&rsquo;s annual assessment.</div>
+      <div style="margin-top:10px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">These three pathways are the <strong>NYSESLAT-era</strong> criteria as written in the 2025&ndash;26 guide. With WIDA ACCESS replacing NYSESLAT this year, <strong>confirm the 2026&ndash;27 exit determination and cut score with OBEWL before exiting any student.</strong></div>
+      <div class="hairline" style="margin:16px 0"></div>
+      <div style="font:500 14px/1.5 Roboto,sans-serif;margin-bottom:6px">Former ELLs — required service after exiting</div>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 10px">At least 0.5 units (90 minutes per week) of Integrated ENL, or one approved alternative pathway, for <strong>at least two school years following the school year in which the student exited</strong> — the regulation sets a floor, not a ceiling, and the clock starts at the end of the exit year. Services must be delivered during the school day; anything outside the bell schedule does not count toward the 90-minute mandate.</p>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        ${NY_FORMER_PATHWAYS.map(p => `<div style="display:flex;gap:12px"><span style="font:500 12.5px/1.6 Roboto,sans-serif;width:64px;flex-shrink:0;color:#2E7D32">${p.opt}</span><span style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);flex:1">${p.t}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">Option B (individualized targeted learning) and World Language AP classes are <strong>no longer valid</strong> pathways — both were retired in Fall 2019.</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Identification — the 8 + 2 Step Process</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Complete within <strong>10 school days</strong> of enrollment, or <strong>20 school days</strong> for a student entering with an IEP. Steps 9 and 10 are used only when a determination is challenged.</p>
+    <div style="display:flex;flex-direction:column">
+      ${NY_IDENT_STEPS.map(s => `
+        <div style="display:flex;gap:16px;padding:12px 0;border-top:1px solid #F5F5F5">
+          <span style="width:28px;height:28px;flex-shrink:0;border-radius:50%;background:${Number(s.n)>8?'#9747FF':'#0074C8'};color:#fff;font:700 13px/28px MuseoModerno,sans-serif;text-align:center">${s.n}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font:500 13.5px/1.5 Roboto,sans-serif">${s.title}</div>
+            <div style="font:400 12.5px/1.7 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:2px">${s.body}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px;border-top:3px solid #D32F2F">
+      <div style="font:400 12px/2.66 Roboto,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#9592A6">NY Education Law § 3201-b</div>
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Immigration-Status Protections</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">Effective May 27, 2026. Codifies <em>Plyler v. Doe</em> in New York law and <strong>names charter schools explicitly</strong>. Staff are strictly prohibited from:</p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[
+          'Using school resources for immigration enforcement purposes.',
+          'Asking about, collecting, or disclosing a student&rsquo;s or family&rsquo;s citizenship or immigration status.',
+          'Treating immigration status, citizenship, or national origin as &ldquo;directory information.&rdquo;',
+          'Using enrollment requirements that delay or deny enrollment of non-citizen students — including delaying class attendance because documents are not immediately available.',
+          'Granting immigration authorities access to non-public areas without a valid federal judicial warrant signed by a U.S. District Court or Magistrate judge.',
+          'Releasing a student into immigration custody based on a civil warrant, detainer, or notice to appear.',
+          'Using immigration authorities as interpreters or translators.'
+        ].map(t => `<div style="display:flex;gap:10px">${icon('block','font-size:16px;color:#D32F2F;flex-shrink:0')}<span style="font:400 12.5px/1.6 Roboto,sans-serif">${t}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">Each school must designate a specific person to handle any request from immigration authorities, consult the district attorney before responding, and notify the SED Privacy Office. If a guardian is detained, keep the student safely on premises and exhaust every authorized emergency contact first.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Parent Rights &amp; Records</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">All notices in the parent&rsquo;s preferred language; all meetings with a qualified interpreter.</p>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        ${[
+          ['Parent orientation','Covers all three program types, learning standards, assessments, and expectations. Parents complete the program agreement form.'],
+          ['Annual ELL parent meeting','Individually, at least once a year, with an interpreter — separate from parent-teacher conferences.'],
+          ['Letters to retain','Entitlement and non-entitlement after the screener, placement letter, default placement letter, continued entitlement, and exit / non-entitlement after the annual assessment.'],
+          ['Cumulative folder','All identification documentation, LPT records, SIFE evidence, every parent notification, orientation attendance, assessment scores, and evidence of the annual parent meeting.'],
+          ['School-level ELL folder','A central folder of critical documents — samples of every student-level document, plus records of program planning. Every document signed, dated, and translated where applicable.']
+        ].map(([k,v]) => `<div><div style="font:500 13px/1.5 Roboto,sans-serif">${k}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">${v}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">What Applies to a NY Charter School</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">The NYC DOE policy guide is the clearest summary of CR Part 154 available, but much of it describes NYC DOE district systems that Bronx ASCS does not use. Read it with this split in mind.</p>
+    <div class="g2" style="gap:24px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">${icon('check_circle','font-size:18px;color:#2E7D32')}<span style="font:500 13.5px/1.5 Roboto,sans-serif;color:#1E4620">Applies to Bronx ASCS</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${NY_APPLIES.filter(a=>a.yes).map(a => `<div style="display:flex;gap:10px;font:400 12.5px/1.6 Roboto,sans-serif"><span style="color:#2E7D32">&bull;</span><span>${a.t}</span></div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">${icon('cancel','font-size:18px;color:#9592A6')}<span style="font:500 13.5px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6)">NYC DOE district-only — reference, not requirements</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${NY_APPLIES.filter(a=>!a.yes).map(a => `<div style="display:flex;gap:10px;font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)"><span style="color:#BDBDBD">&bull;</span><span>${a.t}</span></div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:#E8F4FD;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Bronx ASCS records ELL data in the iLearn SIS and reports to its charter authorizer and NYSED, not through ATS or STARS. Confirm the authorizer&rsquo;s specific ELL reporting requirements with the Department Head.</div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">NYSED Blueprint for ELL/MLL Success</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Eight statewide principles from the Office of Bilingual Education and World Languages. The Blueprint cites a population of 261,848 ELLs/MLLs speaking over 200 languages — note the document is undated and that figure is not a 2026 count.</p>
+    <div class="g2" style="gap:10px 24px">
+      ${NY_BLUEPRINT.map((b,i) => `<div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid #F5F5F5"><span style="font:700 15px/1.3 MuseoModerno,sans-serif;color:#E07A00;width:22px;flex-shrink:0">${i+1}</span><span style="font:400 12.5px/1.6 Roboto,sans-serif">${b}</span></div>`).join('')}
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:#FFF1DE;border-radius:4px;font:400 13px/1.6 Roboto,sans-serif;color:#663C00">OBEWL is explicit that it is <strong>not permissible</strong> to assume unsupported immersion into an English-speaking environment will let an ELL/MLL succeed academically.</div>
+  </div>`;
+}
+
+/* ============================= SCREEN: NY ENL TIMELINE ============================= */
+function renderNyTimeline(){
+  return `
+  ${nyBanner()}
+
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;flex-wrap:wrap">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0;flex:1">2026–2027 — Bronx ASCS</h3>
+      <span class="badge" style="background:#EDE4FF;color:#4A2380">Aug 31, 2026 – Jun 22, 2027 · 180 days</span>
+    </div>
+    <p style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px;max-width:940px">Marking periods: Q1 Aug 31 &ndash; Oct 30 (41 days), Q2 Nov 2 &ndash; Jan 22 (48), Q3 Jan 25 &ndash; Apr 9 (42), Q4 Apr 12 &ndash; Jun 22 (49). Note the Bronx year starts <strong>a week later than the New Jersey campuses</strong> (Aug 31 vs. Aug 24), so every NJ deadline in this portal lands on a different date here.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+      ${Object.keys(NY_TIMELINE_KIND).map(k => `<span class="badge" style="background:${NY_TIMELINE_KIND[k].bg};color:${NY_TIMELINE_KIND[k].color}">${NY_TIMELINE_KIND[k].label}</span>`).join('')}
+    </div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <div style="display:flex;flex-direction:column">
+      ${NY_TIMELINE.map(t => {
+        const k = NY_TIMELINE_KIND[t.kind] || NY_TIMELINE_KIND.op;
+        return `
+        <div style="display:flex;gap:20px;padding:14px 0;border-top:1px solid #F5F5F5">
+          <div style="width:190px;flex-shrink:0">
+            <div style="font:700 15px/1.3 MuseoModerno,sans-serif;letter-spacing:.02em;color:rgba(0,0,0,.87)">${t.date}</div>
+            <div style="font:400 12px/1.5 Roboto,sans-serif;color:#9592A6;margin-top:3px">${t.sub}</div>
+            <span class="badge" style="margin-top:6px;background:${k.bg};color:${k.color}">${k.label}</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font:500 14px/1.5 Roboto,sans-serif">${t.title}</div>
+            <div style="font:400 13px/1.7 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:3px">${t.body}</div>
+          </div>
+          <div style="width:110px;flex-shrink:0;text-align:right">
+            <span class="badge" style="background:#F5F5F5;color:rgba(0,0,0,.6)">${t.tag}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">WIDA ACCESS Scheduling Squeeze</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">The state window looks like ten weeks. On the Bronx calendar it is far less.</p>
+      <div class="g3" style="gap:10px">
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px;text-align:center"><div style="font:700 26px/1 MuseoModerno,sans-serif;color:#5B2AA8">37</div><div style="font:400 11.5px/1.4 Roboto,sans-serif;color:#9592A6;margin-top:4px">school days actually available</div></div>
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px;text-align:center"><div style="font:700 26px/1 MuseoModerno,sans-serif;color:#5B2AA8">13</div><div style="font:400 11.5px/1.4 Roboto,sans-serif;color:#9592A6;margin-top:4px">weekdays closed inside the window</div></div>
+        <div style="background:#FAFAFA;border-radius:4px;padding:14px;text-align:center"><div style="font:700 26px/1 MuseoModerno,sans-serif;color:#D32F2F">5</div><div style="font:400 11.5px/1.4 Roboto,sans-serif;color:#9592A6;margin-top:4px">days overlapping grades 3–8 ELA/Math</div></div>
+      </div>
+      <div style="margin-top:12px;font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Closures falling inside Feb 1 &ndash; Apr 9: Feb 12 (staff development), Midwinter Recess Feb 15&ndash;19, Eid al-Fitr Mar 9, and Spring Recess Mar 26 &ndash; Apr 2.</div>
+      <div style="margin-top:12px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">Plan to finish WIDA ACCESS <strong>before spring recess</strong>. The final week of the window (Apr 5&ndash;9) collides with the opening of the grades 3&ndash;8 ELA and Math window, and make-ups cannot run past Apr 9.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">How These Dates Were Derived</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">So you can re-check any of them.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[
+          ['State assessment windows','Taken verbatim from the NYSED memo &ldquo;Final Dates for the 2026&ndash;27 Elementary- and Intermediate-level Testing&rdquo; (Office of State Assessment, June 2026).'],
+          ['Student deadlines','CR Part 154 defines these in <strong>school days from each student&rsquo;s enrollment</strong>. Dates shown assume enrollment on the first day (Aug 31, 2026); for a later enrollee, count from their own start date.'],
+          ['School-day counting','Computed against the Bronx ASCS 2026&ndash;2027 calendar and validated by reproducing the calendar&rsquo;s own month totals and quarter boundaries — Q1 lands exactly on its stated 41 days.'],
+          ['Still to confirm','WIDA ACCESS exit cut scores for New York, and the Bronx authorizer&rsquo;s specific ELL reporting requirements. Confirm both with OBEWL and the Department Head before making exit decisions.']
+        ].map(([k,v]) => `<div style="padding-bottom:10px;border-bottom:1px solid #F5F5F5"><div style="font:500 13px/1.5 Roboto,sans-serif">${k}</div><div style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-top:2px">${v}</div></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================= SCREEN: NY ENL RESOURCES ============================= */
+function renderNyResources(){
+  const linkRow = (name, meta, url) => `
+    <a href="${url}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:14px;padding:11px 8px;margin:0 -8px;border-bottom:1px solid #F5F5F5;text-decoration:none;color:rgba(0,0,0,.87);border-radius:4px">
+      ${icon('picture_as_pdf','font-size:20px;color:#5B2AA8;flex-shrink:0')}
+      <span style="font:400 13.5px/1.5 Roboto,sans-serif;flex:1;min-width:0">${name}</span>
+      ${meta ? `<span style="font:400 12px/1.6 Roboto,sans-serif;color:#9592A6;width:190px;flex-shrink:0">${meta}</span>` : ''}
+      <span style="display:flex;align-items:center;gap:4px;font:500 11px/20px Roboto,sans-serif;color:#5B2AA8;background:#EDE4FF;border-radius:9999px;padding:0 10px;flex-shrink:0">Open${icon('open_in_new','font-size:14px')}</span>
+    </a>`;
+
+  return `
+  ${nyBanner()}
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Multilingual Learners in CTE — Quick Reference Guides</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 6px">From the CTE Technical Assistance Center of New York. Written for career and technical education teachers, but the strategies apply to any content classroom — each guide is a short, printable set of classroom moves rather than a policy document.</p>
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 16px;background:#E8F4FD;border-radius:4px;flex-wrap:wrap;margin:12px 0 14px">
+      ${icon('lightbulb','font-size:20px;color:#0288D1')}
+      <div style="flex:1;min-width:220px;font:400 12.5px/1.6 Roboto,sans-serif;color:#014361">Good fits for PLC sessions — several include one-page charts and checklists you can print as handouts. ELLs are 8.7% of NY secondary students but only 3.5% of CTE concentrators, so these also make the access case.</div>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      ${NY_CTE_GUIDES.map(g => linkRow(g.name, 'Quick Reference Guide', g.url)).join('')}
+    </div>
+    <div style="font:500 13px/1.6 Roboto,sans-serif;margin:18px 0 4px">Supplemental</div>
+    <div style="display:flex;flex-direction:column">
+      ${NY_CTE_SUPPLEMENTAL.map(g => linkRow(g.name, '', g.url)).join('')}
+    </div>
+    <div style="margin-top:12px;font:400 12px/1.6 Roboto,sans-serif;color:#9592A6">Forthcoming from CTE TAC: Supporting MLLs with Disabilities, and Supporting MLLs from Other Special Populations.</div>
+  </div>
+
+  <div class="card" style="padding:22px 24px">
+    <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">NYSED &amp; State Resources</h3>
+    <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 14px">Authoritative sources for regulations, assessment, and accommodations.</p>
+    <div style="display:flex;flex-direction:column">
+      ${NY_NYSED_LINKS.map(l => linkRow(l.name, l.meta, l.url)).join('')}
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 12px">Key Contacts — New York</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[
+          ['NYSED Office of Bilingual Education and World Languages','(518) 474-8775'],
+          ['Regional Bilingual Education Resource Network (RBERN)','Regional PD and technical assistance'],
+          ['WIDA Client Services','help@wida.us · (866) 276-7735'],
+          ['DRC — WIDA test materials','wida@datarecognitioncorp.com'],
+          ['CTE Technical Assistance Center of New York','ctetac@spnet.us · (518) 723-2137'],
+          ['ESL / Bilingual Department Head — Ms. Cosgun','gcosgun@ilearnschools.org']
+        ].map(([w,h]) => `<div style="display:flex;gap:14px;padding-bottom:9px;border-bottom:1px solid #F5F5F5"><span style="font:400 13px/1.6 Roboto,sans-serif;flex:1">${w}</span><span style="font:400 13px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);text-align:right">${h}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:14px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">Never include student personally identifying information in email to NYSED or NYC DOE. Under § 3201-b, never include or request anything relating to immigration status.</div>
+    </div>
+
+    <div class="card" style="padding:22px 24px">
+      <h3 style="font:500 16px/1.5 Roboto,sans-serif;margin:0 0 4px">Source Documents</h3>
+      <p style="font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 12px">This NY section was built from these four documents. Keep copies in the department&rsquo;s shared drive.</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${[
+          ['Policy and Reference Guide for MLs/ELLs','NYC DOE Office of Multilingual Learners, August 2025 · 205 pp · SY 2025&ndash;26'],
+          ['Final Dates for 2026–27 Elementary- and Intermediate-level Testing','NYSED Office of State Assessment, June 2026'],
+          ['Model Policy and Compliance Procedures: NY Educ. Law § 3201-b','NYSED Office of Counsel · effective May 27, 2026'],
+          ['Blueprint for ELL/MLL Success','NYSED Office of Bilingual Education and World Languages']
+        ].map(([n,m]) => `<div style="padding-bottom:10px;border-bottom:1px solid #F5F5F5"><div style="font:500 13px/1.5 Roboto,sans-serif">${n}</div><div style="font:400 12px/1.6 Roboto,sans-serif;color:#9592A6;margin-top:2px">${m}</div></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">The NYC policy guide is the 2025&ndash;26 edition and predates the WIDA transition — it describes NYSESLAT throughout. Watch for the 2026&ndash;27 edition, and confirm anything assessment-related against NYSED directly.</div>
+    </div>
+  </div>`;
+}
+
 /* ============================= MAIN RENDER ============================= */
 const SCREEN_RENDERERS = {
   dash: renderDash, timeline: renderTimeline, ident: renderIdent, service: renderService,
   exit: renderExit, fml: renderFml, notices: renderNotices, plc: renderPlc, pac: renderPac,
-  wida: renderWida, curriculum: renderCurriculum
+  wida: renderWida, curriculum: renderCurriculum,
+  nyenl: renderNyEnl, nytimeline: renderNyTimeline, nyresources: renderNyResources
 };
 
 function renderAll(){
