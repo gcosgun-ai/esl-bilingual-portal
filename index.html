@@ -133,7 +133,7 @@ function isAllowedDomain(email){
 
 /* Bumped on every deploy. Shown on the sign-in gate so a stale cached copy is
    obvious at a glance instead of being mistaken for a broken feature. */
-const BUILD = 'B6 · 2026-08-06';
+const BUILD = 'B7 · 2026-08-06';
 
 let currentUser = null;      // Firebase auth user object, or null
 let isAuthorizedEditor = false;
@@ -188,6 +188,9 @@ function initAuth(){
     console.warn('[auth] Firebase Auth did not load — portal stays locked.');
     authReady = true; renderAll(); return;
   }
+  // Must happen before the first firebase.auth() call, or the SDK throws
+  // 'No Firebase App [DEFAULT] has been created'.
+  if (!initFirebaseApp()) { authReady = true; renderAll(); return; }
   try {
     firebase.auth();
   } catch (err) {
@@ -241,6 +244,10 @@ function showAuthError(msg, code){
 
 function signIn(){
   authError = '';
+  if (typeof firebase !== 'undefined' && firebase.auth && !initFirebaseApp()) {
+    showAuthError('Could not connect to the sign-in service. Reload the page and try again.', 'app-init-failed');
+    return;
+  }
   if (typeof firebase === 'undefined' || !firebase.auth) {
     // Previously this returned silently, so the button appeared to do nothing.
     showAuthError('The Google sign-in library did not load, so sign-in cannot start. This is usually a blocked network request to gstatic.com — try a different network, or ask IT whether it is filtered.', 'sdk-missing');
@@ -903,10 +910,30 @@ function patchFieldInDom(key, val){
   });
 }
 
-function initFirebaseSync(){
-  if (typeof firebase === 'undefined') { console.warn('[sync] Firebase SDK did not load — running in local-only mode.'); return; }
+/* The Firebase app must exist before ANY firebase.auth() or firebase.database() call.
+   Kept separate from initFirebaseSync because sync is deliberately deferred until an
+   approved account signs in, whereas auth needs the app immediately. */
+let firebaseAppReady = false;
+function initFirebaseApp(){
+  if (firebaseAppReady) return true;
+  if (typeof firebase === 'undefined' || !firebase.initializeApp) {
+    console.warn('[firebase] SDK not loaded.');
+    return false;
+  }
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
+    firebaseAppReady = true;
+  } catch (err) {
+    // Re-initialising throws 'app/duplicate-app'; that just means we are already set up.
+    if (firebase.apps && firebase.apps.length) { firebaseAppReady = true; }
+    else { console.warn('[firebase] initializeApp failed.', err); return false; }
+  }
+  return firebaseAppReady;
+}
+
+function initFirebaseSync(){
+  if (!initFirebaseApp()) { console.warn('[sync] Firebase unavailable — running in local-only mode.'); return; }
+  try {
     fbRef = firebase.database().ref('store');
 
     firebase.database().ref('.info/connected').on('value', snap => {
