@@ -169,8 +169,26 @@ function applyLockState(){
 function editHint(text){ return isAuthorizedEditor ? text : 'View only'; }
 
 function initAuth(){
+  // Watchdog: if Firebase never reports an auth state — SDK blocked, no storage access
+  // in a sandboxed frame, offline — fall through to the sign-in gate instead of
+  // leaving the visitor staring at "Checking your access…" indefinitely.
+  setTimeout(() => {
+    if (!authReady) {
+      authReady = true;
+      console.warn('[auth] no auth state after 5s — showing the sign-in gate.');
+      renderAll();
+    }
+  }, 5000);
+
   if (typeof firebase === 'undefined' || !firebase.auth) {
     console.warn('[auth] Firebase Auth did not load — portal stays locked.');
+    authReady = true; renderAll(); return;
+  }
+  try {
+    firebase.auth();
+  } catch (err) {
+    // Sandboxed frames can throw on init because Auth needs storage it cannot reach.
+    console.warn('[auth] Firebase Auth could not initialize here.', err);
     authReady = true; renderAll(); return;
   }
   firebase.auth().onAuthStateChanged(user => {
@@ -905,18 +923,20 @@ function renderGate(){
       </div>
     </div>`;
 
-  if (!authReady) {
-    return shell(`
-      <div style="font:400 14px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Checking your access&hellip;</div>`);
-  }
-
-  // Embedded (e.g. inside Google Sites): popup sign-in is unreliable, so hand off to a real tab.
+  // Embedded (e.g. inside Google Sites) — checked BEFORE the loading state, because
+  // Firebase Auth often cannot initialize at all in a sandboxed frame (no storage
+  // access), in which case waiting for it would hang here forever.
   if (!currentUser && inIframe()) {
     return shell(`
       <div style="font:400 24px/1.3 Roboto,sans-serif;margin-bottom:8px">Staff sign-in required</div>
       <p style="font:400 13.5px/1.7 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 18px">This portal is restricted to iLearn Schools staff. Sign-in cannot run inside an embedded page, so open it in its own tab to continue.</p>
       <a href="${location.href}" target="_blank" rel="noopener" class="btn-solid" style="display:inline-flex;align-items:center;gap:8px;height:40px;line-height:40px;padding:0 20px">${icon('open_in_new','font-size:18px')}Open the portal to sign in</a>
       <div style="margin-top:20px;padding:12px 14px;background:#FAFAFA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Use your school Google account — any <strong>@ilearnschools.org</strong> or campus charter address.</div>`);
+  }
+
+  if (!authReady) {
+    return shell(`
+      <div style="font:400 14px/1.6 Roboto,sans-serif;color:rgba(0,0,0,.6)">Checking your access&hellip;</div>`);
   }
 
   if (!currentUser) {
