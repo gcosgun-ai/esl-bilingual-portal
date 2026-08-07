@@ -8,27 +8,40 @@ PLC cohorts, PAC tracking, WIDA reference material, and curriculum links.
 
 ## Access model
 
-The portal is **view-only for everyone** by default. Any visitor with the link can
-browse all sections, print the forms, and follow the external links, but cannot
-change any data.
+**Staff-only.** Nothing renders until the visitor signs in with a Google Workspace
+account on an approved iLearn domain:
 
-Editing is restricted to the Department Head (`gcosgun@ilearnschools.org`) via
-Google sign-in. Signing in unlocks every data-entry field; those values then sync
-in real time to everyone viewing the site, powered by Firebase Realtime Database.
+`ilearnschools.org` · `bergencharter.org` · `passaiccharter.org` ·
+`patersoncharter.org` · `hudsoncharter.org` · `bronxcharter.org`
 
-The lock is enforced in two places: the UI disables fields client-side (for clarity),
-and the Firebase security rules reject unauthorized writes server-side (the actual
-security boundary — removing the disabled attribute in devtools achieves nothing).
+Two tiers:
+
+- **View** — any approved domain. All sections, printable forms, and links.
+- **Edit** — the Department Head (`gcosgun@ilearnschools.org`) only. Every data-entry
+  field is disabled for everyone else.
+
+Enforced in two places: the UI here, and the Firebase security rules server-side.
+The rules are the real boundary — the database refuses reads from unapproved accounts
+and writes from anyone but the Department Head, so editing the page in devtools
+achieves nothing. Signing out also clears the local cache, so department data isn't
+left behind in a shared browser.
 
 ## Firebase security rules
 
 Apply `firebase-rules.json` in the Firebase console under
-**Realtime Database → Rules → paste → Publish**. These rules allow the whole world
-to *read* the `store` path, but permit *writes* only from the Department Head's
-authenticated Google account. Everything outside `store` is denied by default.
+**Realtime Database → Rules → paste → Publish**. Reads require a verified Google account on an approved iLearn domain; writes require
+the Department Head's account specifically. Everything outside `store` is denied.
 
-Google sign-in must also be enabled under **Authentication → Sign-in method**, with
-`gcosgun-ai.github.io` listed under **Authentication → Settings → Authorized domains**.
+Google sign-in must be enabled under **Authentication → Sign-in method**, and every
+domain the portal is served from must be listed under **Authentication → Settings →
+Authorized domains** (currently `gcosgun-ai.github.io`).
+
+### Embedding
+
+Google sign-in popups do not work reliably inside cross-origin iframes, so when the
+portal is embedded (e.g. Google Sites) it detects this and offers an "Open the portal
+to sign in" link that breaks out to a real tab. Embedding it in a restricted Google
+Site does **not** restrict the portal — the sign-in gate above is what does.
 
 ## Updating the site
 

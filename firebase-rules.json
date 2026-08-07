@@ -3,8 +3,8 @@
     ".read": false,
     ".write": false,
     "store": {
-      ".read": true,
-      ".write": "auth != null && auth.token.email == 'gcosgun@ilearnschools.org'"
+      ".read": "auth != null && auth.token.email_verified == true && auth.token.email.matches(/^[^@]+@(ilearnschools|bergencharter|passaiccharter|patersoncharter|hudsoncharter|bronxcharter)[.]org$/)",
+      ".write": "auth != null && auth.token.email_verified == true && auth.token.email == 'gcosgun@ilearnschools.org'"
     }
   }
 }
