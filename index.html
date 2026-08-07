@@ -191,6 +191,14 @@ function initAuth(){
     console.warn('[auth] Firebase Auth could not initialize here.', err);
     authReady = true; renderAll(); return;
   }
+  // If we arrived back from a redirect sign-in, surface any failure from it.
+  try {
+    firebase.auth().getRedirectResult().catch(err => {
+      const code = err && err.code ? err.code : '';
+      if (code) showAuthError(authMessage(code, err && err.message ? err.message : ''), code);
+    });
+  } catch (e) { /* older SDKs may not expose this; not fatal */ }
+
   firebase.auth().onAuthStateChanged(user => {
     currentUser = user;
     const email = user && user.email ? user.email.toLowerCase() : '';
@@ -202,18 +210,60 @@ function initAuth(){
     renderAll();
   });
 }
+/* Turn a Firebase error code into something a person can act on. The raw code is
+   shown too — it identifies which console setting is missing far faster than prose. */
+function authMessage(code, fallback){
+  switch (code) {
+    case 'auth/operation-not-allowed':
+      return 'Google sign-in is not switched on for this Firebase project. In the Firebase console: Authentication → Sign-in method → Google → Enable → Save.';
+    case 'auth/unauthorized-domain':
+      return 'This web address is not on the Firebase authorised list. In the Firebase console: Authentication → Settings → Authorised domains → add ' + location.hostname + '.';
+    case 'auth/popup-blocked':
+    case 'auth/cancelled-popup-request':
+      return 'Your browser blocked the sign-in window, so we are redirecting you instead. If nothing happens, allow pop-ups for this page and try again.';
+    case 'auth/popup-closed-by-user':
+      return 'The sign-in window closed before finishing. Please try again.';
+    case 'auth/network-request-failed':
+      return 'The browser could not reach Google to sign in. Check the connection, or whether the school network blocks accounts.google.com.';
+    default:
+      return fallback || 'Sign-in failed.';
+  }
+}
+
+function showAuthError(msg, code){
+  authError = msg + (code ? '  [' + code + ']' : '');
+  renderAll();
+}
+
 function signIn(){
-  if (typeof firebase === 'undefined' || !firebase.auth) return;
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
   authError = '';
-  firebase.auth().signInWithPopup(provider).catch(err => {
-    const code = err && err.code ? err.code : '';
-    authError = code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user'
-      ? 'The sign-in window was blocked or closed. Allow pop-ups for this page, or open the portal in its own tab.'
-      : (err && err.message ? err.message : String(err));
-    renderAll();
-  });
+  if (typeof firebase === 'undefined' || !firebase.auth) {
+    // Previously this returned silently, so the button appeared to do nothing.
+    showAuthError('The Google sign-in library did not load, so sign-in cannot start. This is usually a blocked network request to gstatic.com — try a different network, or ask IT whether it is filtered.', 'sdk-missing');
+    return;
+  }
+  let provider;
+  try {
+    provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+  } catch (err) {
+    showAuthError('Could not start Google sign-in.', 'provider-init-failed');
+    return;
+  }
+  try {
+    firebase.auth().signInWithPopup(provider).catch(err => {
+      const code = err && err.code ? err.code : '';
+      // Managed school browsers often block pop-ups by policy. Redirect always works.
+      if (code === 'auth/popup-blocked' || code === 'auth/cancelled-popup-request') {
+        authError = '';
+        try { firebase.auth().signInWithRedirect(provider); return; }
+        catch (e) { /* fall through to the message below */ }
+      }
+      showAuthError(authMessage(code, err && err.message ? err.message : String(err)), code);
+    });
+  } catch (err) {
+    showAuthError(authMessage(err && err.code, err && err.message ? err.message : String(err)), err && err.code);
+  }
 }
 function signOutUser(){
   // Clear the local cache too, so department data isn't left sitting in the browser
@@ -945,6 +995,7 @@ function renderGate(){
       <p style="font:400 13.5px/1.7 Roboto,sans-serif;color:rgba(0,0,0,.6);margin:0 0 18px">Sign in with your school Google account to view the ESL &amp; Bilingual Department portal.</p>
       <button data-signin="1" class="btn-solid" style="display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 20px;font-size:14px">${icon('login','font-size:18px')}Sign in with Google</button>
       ${authError ? `<div style="margin-top:16px;padding:12px 14px;background:#FDECEA;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#5F2120">${esc(authError)}</div>` : ''}
+      ${(typeof firebase === 'undefined' || !firebase.auth) ? `<div style="margin-top:16px;padding:12px 14px;background:#FFF4E0;border-radius:4px;font:400 12.5px/1.6 Roboto,sans-serif;color:#663C00">${icon('warning','font-size:15px;vertical-align:-2px')} The Google sign-in library is not loaded on this page, so the button cannot work. Usually the network is blocking <strong>gstatic.com</strong>.</div>` : ''}
       <div style="margin-top:20px">
         <div style="font:500 12px/1.5 Roboto,sans-serif;color:rgba(0,0,0,.6);margin-bottom:6px">Approved domains</div>
         <div style="display:flex;flex-wrap:wrap;gap:5px">
