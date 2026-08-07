@@ -131,6 +131,10 @@ function isAllowedDomain(email){
   return ALLOWED_DOMAINS.indexOf(String(email).toLowerCase().slice(at + 1)) !== -1;
 }
 
+/* Bumped on every deploy. Shown on the sign-in gate so a stale cached copy is
+   obvious at a glance instead of being mistaken for a broken feature. */
+const BUILD = 'B6 · 2026-08-06';
+
 let currentUser = null;      // Firebase auth user object, or null
 let isAuthorizedEditor = false;
 let canView = false;         // signed in on an approved domain
@@ -970,6 +974,7 @@ function renderGate(){
       <div class="card" style="max-width:520px;width:100%;padding:32px 34px">
         <div style="max-width:300px;margin-bottom:20px">${LOGO_SVG}</div>
         ${inner}
+        <div style="margin-top:22px;padding-top:12px;border-top:1px solid #F0F0F0;font:400 11px/1.5 Roboto,sans-serif;color:#BDBDBD">Build ${BUILD}</div>
       </div>
     </div>`;
 
